@@ -14,5 +14,23 @@ public class App{
     private static ResultSet result = null;
 
     public static void main(String[] args) {
+        //Base Structure Not perfect
+
+        Scanner s = new Scanner(System.in);
+        int choice;
+        do {
+            System.out.println("---------------------QUERIES----------------------");
+            System.out.println("1.");
+            System.out.println("7. Go Back");
+            System.out.println("\n\n Enter your choice.");
+
+            choice = s.nextInt();
+            switch(choice) {
+                case 1: method(conn); break;
+                case 7: break;
+            }
+        }while(choice<=7 && choice>=1);
+    }
+
     }
 }
