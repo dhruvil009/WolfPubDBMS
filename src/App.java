@@ -9,13 +9,13 @@ import java.util.*;
 
 public class App{
     static final String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/dshah4";
-    // Put your oracle ID and password here
 
     private static Connection connection = null;
     private static Statement statement = null;
     private static ResultSet result = null;
 
     public static void main(String[] args) {
+        initialize();
         //Base Structure Not perfect
 
         Scanner s = new Scanner(System.in);
@@ -34,5 +34,24 @@ public class App{
         }while(choice<=7 && choice>=1);
     }
 
+    private static void initialize() {
+        try {
+            connectToDatabase();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
+    private static void connectToDatabase() throws ClassNotFoundException, SQLException {
+        Class.forName("org.mariadb.jdbc.Driver");
+
+        String user = "dshah4";
+        String passwd = "legionsofdoom";
+
+        connection = DriverManager.getConnection(jdbcURL, user, password);
+        statement = connection.createStatement();
+    }
+
 }
