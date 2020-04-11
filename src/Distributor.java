@@ -110,14 +110,14 @@ public class Distributor{
         result = statement.executeQuery(Query);
         while (result.next()) {
           int account_no = result.getInt(1);
-          char type = result.getString(2);
+          String type = result.getString(2);
           String name = result.getString(3);
           String phone_no = result.getString(4);
           String contact_person = result.getString(5);
           String location = result.getString(6);
           double balance = result.getDouble(7);
           String city = result.getString(8);
-            System.out.println(dist +
+            System.out.println(name +
                                "\t" + account_no +
                                "\t" + type +
                                "\t" + phone_no +
