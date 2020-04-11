@@ -103,16 +103,16 @@ public class Distributor{
 
     public static void showDistributor() throws SQLException {
         String Query = "SELECT * FROM Distributor;";
-        result = statement.executeUpdate(Query);
-        while (rs.next()) {
-          int account_no = rs.getInt();
-          char type = rs.getChar();
-          String dist = in.nextLine();
-          String phone_no = in.nextLine();
-          String contact_person = in.nextLine();
-          String location = in.nextLine();
-          double balance = in.nextDouble();
-          String city = in.nextLine();
+        result = statement.executeQuery(Query);
+        while (result.next()) {
+          int account_no = result.getInt();
+          char type = result.getChar();
+          String dist = result.getString();
+          String phone_no = result.getString();
+          String contact_peresulton = result.getString();
+          String location = result.getString();
+          double balance = result.getString();
+          String city = result.getString();
             System.out.println(dist +
                                "\t" + account_no +
                                "\t" + type +
