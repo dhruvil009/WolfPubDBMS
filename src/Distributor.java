@@ -22,14 +22,15 @@ public class Distributor{
         int choice;
         do {
             System.out.println("---------------------QUERIES----------------------");
-            System.out.println("1.");
-            System.out.println("7. Go Back");
+            System.out.println("1: Add a distributor");
             System.out.println("\n\n Enter your choice.");
 
             choice = s.nextInt();
             switch(choice) {
                 case 1: try {
-                    NewPublication();
+                    newDistributor();
+                case 2: try {
+                    showDistributor();
                 }catch (SQLException e){
                     if (connection != null) {
                         try {
@@ -91,14 +92,55 @@ public class Distributor{
         }
     }
 
-    public static void NewPublication() throws SQLException {
-        int pubid = in.nextInt();
-        String title = in.nextLine();
-        Boolean type = in.nextBoolean();
-        String audience = in.nextLine();
+    public static void showDistributor() throws SQLException {
+        String Query = "SELECT * FROM Distributor;";
+        result = statement.executeUpdate(Query);
+        while (rs.next()) {
+          int account_no = rs.getInt();
+          char type = rs.getChar();
+          String dist = in.nextLine();
+          String phone_no = in.nextLine();
+          String contact_person = in.nextLine();
+          String location = in.nextLine();
+          double balance = in.nextDouble();
+          String city = in.nextLine();
+            System.out.println(dist + "\t" + account_no +
+                               "\t" + type + "\t" + phone_no +
+                               "\t" + contact_person +
+                               "\t" + location +
+                               "\t" + balance +
+                               "\t" + city);
+        }
+    }
 
-        String Query = "INSERT INTO Publications VALUES ("+ pubid +", "+title+", "+type+", "+audience+")";
+    /*
+    * A menu guides you through adding a new Distributor to the Distributors table.
+    * The column names are Account_no, type, name, phone_no, contact_person, location, balance, city
+    */
+    public static void newDistributor() throws SQLException {
+        // Distributor(Account_no, type, name, phone_no, contact_person, location, balance, city)
+        System.out.println("Enter Account_no");
+        int account_no = in.nextInt();
+        System.out.println("Enter type: ('W' | 'B' | 'L')");
+        char type = in.nextChar();
+        System.out.println("Enter name of distributor: ");
+        String dist = in.nextLine();
+        System.out.println("Enter phone_no: i.e. 555-555-5555");
+        String phone_no = in.nextLine();
+        System.out.println("Enter contact_person name: ");
+        String contact_person = in.nextLine();
+        System.out.println("Enter location: ");
+        String location = in.nextLine();
+        System.out.println("Enter balance: ");
+        double balance = in.nextDouble();
+        System.out.println("Enter city: ");
+        String city = in.nextLine();
+
+        String Query = "INSERT INTO Distributor VALUES ("+ pubid +", "+title+", "+type+", "+audience+")";
         statement.executeUpdate(Query);
+
+
+
     }
 
 
