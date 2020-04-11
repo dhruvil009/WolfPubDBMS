@@ -151,6 +151,8 @@ public class Distributor{
         System.out.println("Enter city: ");
         String city = in.nextLine();
 
+        System.out.println("After in.nextLine for city ");
+
         String Query = "INSERT INTO Distributor VALUES (" +account_no+ ","
          +type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
          +location+ "," +balance+ "," +city + ")";
