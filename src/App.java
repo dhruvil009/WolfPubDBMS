@@ -9,12 +9,13 @@ import java.util.*;
 
 public class App{
     static final String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/dshah4";
-
+    private static Scanner in = null;
     private static Connection connection = null;
     private static Statement statement = null;
     private static ResultSet result = null;
 
     public static void main(String[] args) {
+        in = new Scanner(System.in);
         initialize();
         //Base Structure Not perfect
 
@@ -28,8 +29,21 @@ public class App{
 
             choice = s.nextInt();
             switch(choice) {
-                case 1: method(conn); break;
+                case 1: try {
+                    NewPublication();
+                }catch (SQLException e){
+                    if (connection != null) {
+                        try {
+                            connection.rollback();
+                        } catch(SQLException excep) {
+                            excep.printStackTrace();
+                        }
+                    }
+                }
+                    break;
                 case 7: break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + choice);
             }
         }while(choice<=7 && choice>=1);
     }
@@ -48,10 +62,45 @@ public class App{
         Class.forName("org.mariadb.jdbc.Driver");
 
         String user = "dshah4";
-        String passwd = "legionsofdoom";
+        String password = "legionsofdoom";
 
         connection = DriverManager.getConnection(jdbcURL, user, password);
         statement = connection.createStatement();
     }
+
+    public static void close(){
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (result != null) {
+            try {
+                result.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void NewPublication() throws SQLException {
+        int pubid = in.nextInt();
+        String title = in.nextLine();
+        Boolean type = in.nextBoolean();
+        String audience = in.nextLine();
+
+        String Query = "INSERT INTO Publications VALUES ("+ pubid +", "+title+", "+type+", "+audience+")";
+        statement.executeUpdate(Query);
+    }
+
 
 }
