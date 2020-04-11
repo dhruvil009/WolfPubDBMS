@@ -135,7 +135,7 @@ public class Distributor{
         System.out.println("Enter type: ('W' | 'B' | 'L')");
         char type = in.nextChar();
         System.out.println("Enter name of distributor: ");
-        String dist = in.nextLine();
+        String name = in.nextLine();
         System.out.println("Enter phone_no: i.e. 555-555-5555");
         String phone_no = in.nextLine();
         System.out.println("Enter contact_person name: ");
@@ -147,7 +147,9 @@ public class Distributor{
         System.out.println("Enter city: ");
         String city = in.nextLine();
 
-        String Query = "INSERT INTO Distributor VALUES ("+ pubid +", "+title+", "+type+", "+audience+")";
+        String Query = "INSERT INTO Distributor VALUES (" +account_no+ ","
+         +type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
+         +location+ "," +balance+ "," +city + ")";
         statement.executeUpdate(Query);
 
 
