@@ -29,6 +29,15 @@ public class Distributor{
             switch(choice) {
                 case 1: try {
                     newDistributor();
+                }catch (SQLException e){
+                    if (connection != null) {
+                        try {
+                            connection.rollback();
+                        } catch(SQLException excep) {
+                            excep.printStackTrace();
+                        }
+                    }
+                }
                 case 2: try {
                     showDistributor();
                 }catch (SQLException e){
@@ -104,8 +113,10 @@ public class Distributor{
           String location = in.nextLine();
           double balance = in.nextDouble();
           String city = in.nextLine();
-            System.out.println(dist + "\t" + account_no +
-                               "\t" + type + "\t" + phone_no +
+            System.out.println(dist +
+                               "\t" + account_no +
+                               "\t" + type +
+                               "\t" + phone_no +
                                "\t" + contact_person +
                                "\t" + location +
                                "\t" + balance +
