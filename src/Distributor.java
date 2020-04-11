@@ -23,6 +23,7 @@ public class Distributor{
         do {
             System.out.println("---------------------QUERIES----------------------");
             System.out.println("1: Add a distributor");
+            System.out.println("2: Show all distributors");
             System.out.println("\n\n Enter your choice.");
 
             choice = s.nextInt();
@@ -30,6 +31,7 @@ public class Distributor{
                 case 1: try {
                     newDistributor();
                 }catch (SQLException e){
+                    e.printStackTrace();
                     if (connection != null) {
                         try {
                             connection.rollback();
@@ -41,6 +43,7 @@ public class Distributor{
                 case 2: try {
                     showDistributor();
                 }catch (SQLException e){
+                    e.printStackTrace();
                     if (connection != null) {
                         try {
                             connection.rollback();
@@ -152,6 +155,7 @@ public class Distributor{
         String city = in.nextLine();
 
         System.out.println("After in.nextLine for city ");
+        in.nextLine();
 
         String Query = "INSERT INTO Distributor VALUES (" +account_no+ ","
          +type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
