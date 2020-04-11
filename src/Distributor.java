@@ -101,18 +101,22 @@ public class Distributor{
         }
     }
 
+    /*
+    * shows all the rows in the Distributor table.
+    * column names: Account_no, type, name, phone_no, contact_person, location, balance, city)
+    */
     public static void showDistributor() throws SQLException {
         String Query = "SELECT * FROM Distributor;";
         result = statement.executeQuery(Query);
         while (result.next()) {
-          int account_no = result.getInt();
-          char type = result.getChar();
-          String dist = result.getString();
-          String phone_no = result.getString();
-          String contact_peresulton = result.getString();
-          String location = result.getString();
-          double balance = result.getString();
-          String city = result.getString();
+          int account_no = result.getInt(1);
+          char type = result.getString(2);
+          String name = result.getString(3);
+          String phone_no = result.getString(4);
+          String contact_person = result.getString(5);
+          String location = result.getString(6);
+          double balance = result.getDouble(7);
+          String city = result.getString(8);
             System.out.println(dist +
                                "\t" + account_no +
                                "\t" + type +
@@ -133,7 +137,7 @@ public class Distributor{
         System.out.println("Enter Account_no");
         int account_no = in.nextInt();
         System.out.println("Enter type: ('W' | 'B' | 'L')");
-        char type = in.nextChar();
+        char type = in.next().charAt(0);
         System.out.println("Enter name of distributor: ");
         String name = in.nextLine();
         System.out.println("Enter phone_no: i.e. 555-555-5555");
