@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.util.*;
 
 public class Distributor{
-    static final String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/dshah4";
+    static final String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/mtrawic";
     private static Scanner in = null;
     private static Connection connection = null;
     private static Statement statement = null;
