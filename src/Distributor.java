@@ -161,15 +161,15 @@ public class Distributor{
             String city = in.nextLine();
 
 
-            PreparedStatement stmt;
-            stmt = connection.prepareStatement("INSERT INTO Distributor VALUES (" +account_no+ ","
+            PreparedStatement pstmt = null;
+            pstmt = connection.prepareStatement("INSERT INTO Distributor VALUES (" +account_no+ ","
              +type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
              +location+ "," +balance+ "," +city + ")");
 
             //String Query = "INSERT INTO Distributor VALUES (" +account_no+ ","
              //+type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
              //+location+ "," +balance+ "," +city + ")";
-            stmt.executeUpdate();
+            pstmt.executeUpdate();
       }
       catch( InputMismatchException e) {
           e.printStackTrace();
