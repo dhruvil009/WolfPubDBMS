@@ -140,30 +140,24 @@ public class Distributor{
     public static void newDistributor() throws SQLException {
         // Distributor(Account_no, type, name, phone_no, contact_person, location, balance, city)
         try {
-
-
             System.out.println("Enter Account_no");
             int account_no = in.nextInt();
+            in.nextLine();
             System.out.println("Enter type: ('W' | 'B' | 'L')");
             String type = "" + in.nextLine().charAt(0);
-            /* For some reason the console is skipping over
-            while (type == null) {
-              System.out.println("Enter type: ('W' | 'B' | 'L')");
-              type = "" + in.nextLine().charAt(0);
-            }
-            */
             System.out.println("Enter name of distributor: ");
-            String name = in.next();
+            String name = in.nextLine();
             System.out.println("Enter phone_no: i.e. 555-555-5555");
-            String phone_no = in.next();
+            String phone_no = in.nextLine();
             System.out.println("Enter contact_person name: ");
-            String contact_person = in.next();
+            String contact_person = in.nextLine();
             System.out.println("Enter location: ");
-            String location = in.next();
+            String location = in.nextLine();
             System.out.println("Enter balance: ");
             double balance = in.nextDouble();
+            in.nextLine();
             System.out.println("Enter city: ");
-            String city = in.next();
+            String city = in.nextLine();
 
 
 
