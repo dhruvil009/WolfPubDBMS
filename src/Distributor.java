@@ -111,6 +111,8 @@ public class Distributor{
     public static void showDistributor() throws SQLException {
         String Query = "SELECT * FROM Distributor;";
         result = statement.executeQuery(Query);
+        if (!result.next())
+          System.out.println("Distributor is empty.");
         while (result.next()) {
           int account_no = result.getInt(1);
           String type = result.getString(2);
@@ -140,9 +142,17 @@ public class Distributor{
         System.out.println("Enter Account_no");
         int account_no = in.nextInt();
         System.out.println("Enter type: ('W' | 'B' | 'L')");
-        char type = in.next().charAt(0);
+        String type = '' + in.next().charAt(0);
+        while (type == null) {
+          System.out.println("Enter type: ('W' | 'B' | 'L')");
+          type = '' + in.next().charAt(0);
+        }
         System.out.println("Enter name of distributor: ");
         String name = in.nextLine();
+        while (name == null) {
+          System.out.println("Enter name of distributor: ");
+          name = in.nextLine();
+        }
         System.out.println("Enter phone_no: i.e. 555-555-5555");
         String phone_no = in.nextLine();
         System.out.println("Enter contact_person name: ");
@@ -154,8 +164,6 @@ public class Distributor{
         System.out.println("Enter city: ");
         String city = in.nextLine();
 
-        System.out.println("After in.nextLine for city ");
-        in.nextLine();
 
         String Query = "INSERT INTO Distributor VALUES (" +account_no+ ","
          +type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
