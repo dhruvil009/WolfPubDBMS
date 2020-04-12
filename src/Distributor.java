@@ -22,14 +22,15 @@ public class Distributor{
         Scanner s = new Scanner(System.in);
         int choice;
         do {
-            System.out.println("---------------------QUERIES----------------------");
+            System.out.println("---------------- Main Menu ------------------");
             System.out.println("1: Add a distributor");
             System.out.println("2: Show all distributors");
+            System.out.println("3: Delete distributor");
             System.out.println("\n\n Enter your choice.");
 
             choice = s.nextInt();
             switch(choice) {
-                case 1: try {
+                case 1: try {                               // Add a distributor
                     newDistributor();
                 }catch (SQLException e){
                     e.printStackTrace();
@@ -41,7 +42,19 @@ public class Distributor{
                         }
                     }
                 }
-                case 2: try {
+                case 2: try {                               // Show all the distributors
+                    showDistributor();
+                }catch (SQLException e){
+                    e.printStackTrace();
+                    if (connection != null) {
+                        try {
+                            connection.rollback();
+                        } catch(SQLException excep) {
+                            excep.printStackTrace();
+                        }
+                    }
+                }
+                case 3: try {                               // Show all the distributors
                     showDistributor();
                 }catch (SQLException e){
                     e.printStackTrace();
@@ -110,11 +123,14 @@ public class Distributor{
     * column names: Account_no, type, name, phone_no, contact_person, location, balance, city)
     */
     public static void showDistributor() throws SQLException {
-        String Query = "SELECT * FROM Distributor;";
-        result = statement.executeQuery(Query);
-        if (!result.next())
-          System.out.println("Distributor is empty.");
+        //String Query = "SELECT * FROM Distributor;";
+        PreparedStatement showAllDistributors = null;
+        showAllDistributors = connection.prepareStatement("SELECT * FROM Distributor;");
+        result = showAllDistributors.executeQuery();
+        //if (!result.next())
+        //  System.out.println("Distributor is empty.");
         while (result.next()) {
+          System.out.println();
           int account_no = result.getInt(1);
           String type = result.getString(2);
           String name = result.getString(3);
@@ -162,9 +178,9 @@ public class Distributor{
 
 
             PreparedStatement pstmt = null;
-            pstmt = connection.prepareStatement("INSERT INTO Distributor VALUES (" +account_no+ ","
-             +type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
-             +location+ "," +balance+ "," +city + ")");
+            pstmt = connection.prepareStatement("INSERT INTO Distributor VALUES (" +account_no+ ",\""
+             +type+ "\",\"" +name+ "\",\"" +phone_no+ "\",\"" +contact_person+ "\",\""
+             +location+ "\"," +balance+ ",\"" +city + "\")");
 
             //String Query = "INSERT INTO Distributor VALUES (" +account_no+ ","
              //+type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
