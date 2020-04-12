@@ -3,6 +3,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 
 import java.util.*;
 
@@ -37,7 +38,7 @@ public class report {
 	            choice = s.nextInt();
 	            switch(choice) {
 	                case 1: try {
-	                	monthlyReport();
+	                	monthlyReport();	                
 	                }catch (SQLException e){
 	                    e.printStackTrace();
 	                    if (connection != null) {
@@ -48,15 +49,117 @@ public class report {
 	                        }
 	                    }
 	                }
-	                    
-	                case 2:
-	                case 3:
-	                case 4:
-	                case 5:
-	                case 6:
-	                case 7:
-	                case 8:
-	                case 9:
+	                    break;
+	                case 2:try {	           
+	                	revenuePublishing();
+	                }catch (SQLException e){
+	                    e.printStackTrace();
+	                    if (connection != null) {
+	                        try {
+	                            connection.rollback();
+	                        } catch(SQLException excep) {
+	                            excep.printStackTrace();
+	                        }
+	                    }
+	                }
+	                break;
+	                case 3: try {	           
+	                	costPublishing();
+	                }catch (SQLException e){
+	                    e.printStackTrace();
+	                    if (connection != null) {
+	                        try {
+	                            connection.rollback();
+	                        } catch(SQLException excep) {
+	                            excep.printStackTrace();
+	                        }
+	                    }
+	                }
+	                break;
+	                
+	                case 4: try {	           
+	                	distributionNum(); 
+	                }catch (SQLException e){
+	                    e.printStackTrace();
+	                    if (connection != null) {
+	                        try {
+	                            connection.rollback();
+	                        } catch(SQLException excep) {
+	                            excep.printStackTrace();
+	                        }
+	                    }
+	                }
+	                break;
+	   
+	                case 5:try {	           
+	                	revenueCity(); 
+	                }catch (SQLException e){
+	                    e.printStackTrace();
+	                    if (connection != null) {
+	                        try {
+	                            connection.rollback();
+	                        } catch(SQLException excep) {
+	                            excep.printStackTrace();
+	                        }
+	                    }
+	                }
+	                break;
+	                
+	                case 6:try {	           
+	                	revenueDistributor(); 
+	                }catch (SQLException e){
+	                    e.printStackTrace();
+	                    if (connection != null) {
+	                        try {
+	                            connection.rollback();
+	                        } catch(SQLException excep) {
+	                            excep.printStackTrace();
+	                        }
+	                    }
+	                }
+	                break;
+	                
+	                case 7:try {	           
+	                	revenueLocation(); 
+	                }catch (SQLException e){
+	                    e.printStackTrace();
+	                    if (connection != null) {
+	                        try {
+	                            connection.rollback();
+	                        } catch(SQLException excep) {
+	                            excep.printStackTrace();
+	                        }
+	                    }
+	                }
+	                break;
+	                
+	                case 8:try {	           
+	                	personnelPayments(); 
+	                }catch (SQLException e){
+	                    e.printStackTrace();
+	                    if (connection != null) {
+	                        try {
+	                            connection.rollback();
+	                        } catch(SQLException excep) {
+	                            excep.printStackTrace();
+	                        }
+	                    }
+	                }
+	                break;
+	                case 9:try {	           
+	                	pubPayments(); 
+	                }catch (SQLException e){
+	                    e.printStackTrace();
+	                    if (connection != null) {
+	                        try {
+	                            connection.rollback();
+	                        } catch(SQLException excep) {
+	                            excep.printStackTrace();
+	                        }
+	                    }
+	                }
+	                break;
+	                	
 	                default:
 	                    throw new IllegalStateException("Unexpected value: " + choice);
 	            }
@@ -107,191 +210,303 @@ public class report {
 	        }
 	    }
 	    
-
-
+	 
+	    
+// shows the reports of the orders of each month of the distributors
 	    public static void monthlyReport()  throws SQLException{
 	    	
 	    
-	    	
-	    	String Query = "SELECT Distributor.Account_no, Month(Orders.order_date) Month, Year(Orders.order_date) Year, sum(oi.price) totalprice, sum(oi.quantity) totalquantity, oi.Pub_Id, Publications.title FROM Distributor NATURAL JOIN Order_for_Issues oi NATURAL JOIN Orders Inner JOIN Publications where oi.Pub_Id =Publications.Pub_Id GROUP BY Distributor.Account_no, oi.Pub_Id, Month, Year UNION SELECT Distributor.Account_no, Month(Orders.order_date) Month,Year(Orders.order_date) Year, sum(oe.price) totalprice, sum(oe.quantity) totalquantity, Publications.Pub_Id, Publications.title FROM Distributor NATURAL JOIN Order_for_Edition oe NATURAL JOIN Orders Inner JOIN Publications Inner Join Ofwhere oe.ISBN = Of.ISBN AND Of.Pub_Id = Publications.Pub_Id GROUP BY Distributor.Account_no, Publications.Pub_Id,Month, Year;";
-	    	ResultSet rs = statement.executeQuery(Query);
-	    	
-	    	while(rs.next())
+	    	PreparedStatement monthlyrep = null;
+	    	monthlyrep = connection.prepareStatement("SELECT Distributor.Account_no, Month(Orders.order_date) Month, Year(Orders.order_date) Year, sum(oi.price) totalprice, sum(oi.quantity) totalquantity, oi.Pub_Id, Publications.title FROM Distributor NATURAL JOIN Order_for_Issues oi NATURAL JOIN Orders Inner JOIN Publications where oi.Pub_Id =Publications.Pub_Id GROUP BY Distributor.Account_no, oi.Pub_Id, Month, Year UNION SELECT Distributor.Account_no, Month(Orders.order_date) Month,Year(Orders.order_date) Year, sum(oe.price) totalprice, sum(oe.quantity) totalquantity, Publications.Pub_Id, Publications.title FROM Distributor NATURAL JOIN Order_for_Edition oe NATURAL JOIN Orders Inner JOIN Publications Inner Join Of where oe.ISBN = Of.ISBN AND Of.Pub_Id = Publications.Pub_Id GROUP BY Distributor.Account_no, Publications.Pub_Id,Month, Year;");
+	    	result = monthlyrep.executeQuery();
+	    	System.out.println(
+                    "Account_no" +
+                    "\t" + "Month" +
+                    "\t" + "Year" +
+                    "\t" + "total price" +
+                    "\t" + "quantity" +
+                    "\t" + "Pub Id" +
+                    "\t" + "title");
+	    	while(result.next())
 	    	{
-
-       System.out.print("Account_no:"+rs.getString(1));
-       System.out.print("\tMonth:"+rs.getString(2));
-       System.out.print("\tYear:"+rs.getString(3));
-       System.out.print("\ttotalprice:"+rs.getString(4));
-       System.out.print("\ttotalquantity:"+rs.getString(5));
-       System.out.print("\tPub_Id:"+rs.getString(6));
-       System.out.print("\tDtitle:"+rs.getString(7));
-
+	    		 System.out.println();
+		          int Account_no = result.getInt(1);
+		          int month = result.getInt(2);
+		          int year = result.getInt(3);
+		          Double totalPrice = result.getDouble(4);
+		          int quantity = result.getInt(5);
+		          int PubId = result.getInt(6);
+		          String title = result.getString(7);
+		          System.out.println(
+                          Account_no +
+                          "\t\t" + month +
+                          "\t" + year +
+                          "\t" + totalPrice +
+                          "\t\t" + quantity +
+                          "\t\t" + PubId +
+                          "\t" + title );
+		        		  
+				}
+			
+		          
    }
- }
 
+//shows the revenue of the publication house in each month
 
 	    public static void revenuePublishing()  throws SQLException{
 	  
+	    	PreparedStatement revenuep = null;
+	    	
+	    	revenuep = connection.prepareStatement("SELECT Month(t.claim_date) as month, Year(t.claim_date) as year, SUM(t.Amount) as revenue FROM (SELECT amount,  claim_date, Pays.PaymentId FROM Pays INNER JOIN Payments ON Pays.PaymentId = Payments.PaymentId) t GROUP BY Month, Year;");
+	    			 
+	        result = revenuep.executeQuery();
+	        
+	        System.out.println(
+                    "Month" +
+                    "\t" + "Year" +
+                    "\t" + "Revenue" );
+	        
 
-	    	String Query = "SELECT Month(t.claim_date) as month, Year(t.claim_date) as year, SUM(t.Amount) as revenue FROM ( SELECT amount,  claim_date, Pays.PaymentId FROM Pays INNER JOIN Payments ON Pays.PaymentId = Payments.PaymentId GROUP BY Month, Year;";
-
-	    	ResultSet rs = statement.executeQuery(Query);
-
-	    			while(rs.next())
-	    			{
-
-	    				System.out.print("Month:"+rs.getString(1));
-	    				System.out.print("\tYear:"+rs.getString(2));
-	    				System.out.print("\tRevenue :"+rs.getString(3));
-
-	    			} 
-
+	    				while (result.next()) {
+		    		          System.out.println();
+		    		          int Month = result.getInt(1);
+		    		          int Year = result.getInt(2);
+		    		          double Revenue = result.getDouble(3);
+		    		          
+	    				 System.out.println(
+	                               Month +
+	                               "\t" + Year +
+	                               "\t" + Revenue );
+	    				}
+	    			
+	    			
+	  
 	    }
 
-
+// shows the costs of the publication house in each month
+	    
 	    public static void costPublishing()  throws SQLException{
 	    
 
-	        
-	    	String Query = "SELECT YEAR(date) as Year, MONTH(date) as Month, SUM(t.cost) AS total_expenses FROM (SELECT shipping_cost AS cost, order_date AS date FROM Orders UNION ALL SELECT amount AS cost, claim_date AS date FROM Compensate INNER JOIN Payments ON Payments.PaymentId = Compensate.PaymentId GROUP BY MONTH, YEAR;";
-	    		
-
-	    	ResultSet rs = statement.executeQuery(Query);
-
-	    			while(rs.next())
-	    			{
-
-	    				System.out.print("Year:"+rs.getString(1));
-	    				System.out.print("\tMonth:"+rs.getString(2));
-	    				System.out.print("\tTotalExpense :"+rs.getString(3));
-
+	    	PreparedStatement costp = null;
+	    	costp = connection.prepareStatement("SELECT YEAR(date) as Year, MONTH(date) as Month, SUM(t.cost) AS total_expenses FROM( SELECT shipping_cost AS cost, order_date AS date FROM Orders UNION ALL SELECT amount AS cost, claim_date AS date FROM Compensate INNER JOIN Payments ON Payments.PaymentId = Compensate.PaymentId) t GROUP BY MONTH, YEAR;");
+	    	
+	    	result = costp.executeQuery();
+	    	System.out.println(
+	    			"year" +
+                    "\t" + "Month" +
+                    "\t" + "Expense" );
+	    	
+	    			while(result.next()){
+	    			
+	    				   System.out.println();
+		    		          int year = result.getInt(1);
+		    		          int month = result.getInt(2);
+		    		          double totalExpense = result.getDouble(3);
+		    
+		    		          
+	    				 System.out.println(
+	                               year +
+	                               "\t" + month +
+	                               "\t" + totalExpense );
+	    				
+	
 	    			} 
 	    }
 	    			
-
+// calculate the number of the distributors in the database
 	    public static void distributionNum()  throws SQLException{
 	    	
-	   
-	    		        
-	    		  String Query = "SELECT COUNT(*) AS num_distributors FROM Distributor;";
-	    		    		
+	  	    	 
+	  	    	PreparedStatement distnum = null;
+		    	distnum = connection.prepareStatement("SELECT COUNT(*) AS num_distributors FROM Distributor;");
+		    	
+		    	result = distnum.executeQuery();
+		    	System.out.println("Number of Distributors:");
+		    	
+		    	while(result.next()){
+	    			
+ 				   System.out.println();
+	    		          int num = result.getInt(1);
+	    		   
+	    
+	    		          
+ 				 System.out.println(num );
+ 				
 
-	    		  ResultSet rs = statement.executeQuery(Query);
-
-	    		  while(rs.next())
-	    		    {
-	    	  
-	    		    	System.out.print("numDistributors:"+rs.getString(1));
-	    		    				
-
-	    		    } 
+ 			} 
 	    			}
 
-
+//shows the distributor revenues in each city
 	    public static void revenueCity()  throws SQLException{
 	    	
-
+	    	PreparedStatement cityrev = null;
+	 
 	        
-	    	String Query = "SELECT city, SUM(amount) AS revenue FROM Pays ON Pays.Account_no  = Distributor.Account_no INNER JOIN Payments ON Pays.PaymentId=Payments.PaymentId GROUP BY city;";
+	    	cityrev = connection.prepareStatement("SELECT city, SUM(amount) AS revenue FROM Pays INNER JOIN Distributor ON Pays.Account_no  = Distributor.Account_no INNER JOIN Payments ON Pays.PaymentId=Payments.PaymentId GROUP BY city;");
+	    	result = cityrev.executeQuery();
+	    	
+	    	
+	    	System.out.println(
+	    			"City" +
+                    "\t" + "Revenue" );
+	    	
+	    	while(result.next()){
+    			
+				   System.out.println();
+ 		          String city = result.getString(1);
+ 		          Double Revenue = result.getDouble(2);
+ 
+ 		          
+				 System.out.println(
+                        city +
+                        "\t" + Revenue );
+				
 
-	    	ResultSet rs = statement.executeQuery(Query);
-
-	    			while(rs.next())
-	    			{
-
-	    				System.out.print("City:"+rs.getString(1));
-	    				System.out.print("\tRevenue :"+rs.getString(2));
-
-	    			} 
+			}  
+	    		
 
 	    }
 
-	    
+	    // shows each distributor revenue
 	    public static void revenueDistributor()  throws SQLException{
 	    	
 
+	    	PreparedStatement distrev = null;
+	 
 	        
-	    	String Query = "SELECT name, SUM(amount) AS revenue FROM Pays INNER JOIN Distributor ON Pays.Account_no  = Distributor.Account_no INNER JOIN Payments ON Pays.PaymentId=Payments.PaymentId GROUP BY Distributor.Account_no;";
-	    		
+	    	distrev = connection.prepareStatement("SELECT Distributor.Account_no, name, SUM(amount) AS revenue FROM Pays INNER JOIN Distributor ON Pays.Account_no  = Distributor.Account_no INNER JOIN Payments ON Pays.PaymentId=Payments.PaymentId GROUP BY Distributor.Account_no;");
+	    	result = distrev.executeQuery();
+	    	
+	    	
+	    	System.out.println(
+	    			"Account_no" +
+                    "\t" + "name" +
+                    "\t" + "revenue");
+	    	
+	    	while(result.next()){
+    			
+				   System.out.println();
+ 		          int accountNo = result.getInt(1);
+ 		          String name = result.getString(2);
+ 		          Double Revenue = result.getDouble(3);
+ 
+ 		          
+				 System.out.println(
+                        accountNo +
+                        "\t" + name+
+                        "\t" + Revenue );
+				
 
-	    	ResultSet rs = statement.executeQuery(Query);
-
-	    			while(rs.next())
-	    			{
-
-	    				System.out.print("accountNum:"+rs.getString(1));
-	    				System.out.print("\tname :"+rs.getString(2));
-	    				System.out.print("\trevenue :"+rs.getString(3));
-
-	    			} 
+			}  
+	    	
+	    
 
 	    }
-	    
+	    // shows the distributors revenue in each location
 	    public static void revenueLocation()  throws SQLException{
 	    	
 
+	    	PreparedStatement locrev = null;
+	 
 	        
-	    	String Query = "SELECT  location,  SUM(amount) AS revenue FROM Pays INNER JOIN Distributor ON Pays.Account_no  = Distributor.Account_no INNER JOIN Payments ON Pays.PaymentId=Payments.PaymentId GROUP BY location;";
+	    	locrev = connection.prepareStatement("SELECT  location,  SUM(amount) AS revenue FROM Pays INNER JOIN Distributor ON Pays.Account_no  = Distributor.Account_no INNER JOIN Payments ON Pays.PaymentId=Payments.PaymentId GROUP BY location;");
+	    	result = locrev.executeQuery();
+	    	
+	    	
+	    	System.out.println(
+	    			"Location" +
+                    "\t" + "Revenue" );
+	    	
+	    	while(result.next()){
+    			
+				   System.out.println();
+ 		          String location = result.getString(1);
+ 		          Double Revenue = result.getDouble(2);
+ 
+ 		          
+				 System.out.println(
+                        location +
+                        "\t" + Revenue );
+				
+
+			}  
+	    	
 	    		
-
-	    	ResultSet rs = statement.executeQuery(Query);
-
-	    			while(rs.next())
-	    			{
-
-	    				System.out.print("Location:"+rs.getString(1));
-	    				System.out.print("\tRevenue :"+rs.getString(2));
-
-	    			} 
-
 	    }
 	    
+	    
+	    
+	    // shows the payments of the authors, editor, and journalists in a given period
 	    public static void personnelPayments()  throws SQLException{
 	    	
 	
-	    	System.out.println("Enter the date of beginning");
+	    	System.out.println("Enter the date of beginning (i.e 2020-01-01):  ");
 	        String begindate = in.next();
-	        System.out.println("Enter the date of ending");
-	        String enddate = in.next();
-
-	    	
-	    	String Query = "SELECT SUM(Amount) AS payments FROM Compensate NATURAL JOIN Payments WHERE date IN (SELECT date FROM Payments WHERE date" + begindate+ "AND" +enddate+ ");";
-	    		
-
-	    	ResultSet rs = statement.executeQuery(Query);
-
-	    			while(rs.next())
-	    			{
-
-	    				System.out.print("payment:"+rs.getString(1));
-
-
-	    			} 
-
-	       }
-	    
-	    
-	    public static void pubPayments()  throws SQLException{
-	    	
-	    	System.out.println("Enter the date of beginning");
-	        String begindate = in.next();
-	        System.out.println("Enter the date of ending");
+	        System.out.println("Enter the date of ending (i.e 2020-01-01):  ");
 	        String enddate = in.next();
 
 	        
-	    	String Query = " SELECT 'Book' AS type, SUM(amount )AS total_payments INNER JOIN Employee ON Authors.Staff_Id = Employee.Staff_Id INNER JOIN Compensate ON Employee.Staff_Id = Compensate.Staff_Id INNER JOIN Payments ON Compensate.PaymentId = Payments.PaymentId WHERE claim_date >= " + begindate+ " AND claim_date <= " + enddate+ " UNION ALL SELECT 'Editorial' AS type, SUM(amount) AS total_payments FROM Editors INNER JOIN Employee ON Editors.Staff_Id = Employee.Staff_Id INNER JOIN Compensate ON Employee.Staff_Id = Compensate.Staff_Id INNER JOIN Payments ON Compensate.PaymentId = Payments.PaymentId WHERE claim_date >= " + begindate+ " AND claim_date <= " + enddate+ " UNION ALL SELECT 'Article' AS type, SUM(amount) AS total_payments FROM Journalists INNER JOIN Employee ON Journalists.Staff_Id = Employee.Staff_Id INNER JOIN Compensate ON Employee.Staff_Id = Compensate.Staff_Id INNER JOIN Payments ON Compensate.PaymentId = Payments.PaymentId WHERE claim_date >= " + begindate+ "AND claim_date <= " +enddate+ ";";
+	        PreparedStatement ppayment = null;
+	        ppayment= connection.prepareStatement("SELECT SUM(Amount) AS payments FROM Compensate NATURAL JOIN Payments WHERE date IN (SELECT date FROM Payments WHERE date > ? AND date < ?);" );
+	        ppayment.setDate(1, java.sql.Date.valueOf(begindate));
+	        ppayment.setDate(2, java.sql.Date.valueOf(enddate));
+	    	
+	    	result = ppayment.executeQuery();
+	    	System.out.println("Total payment to personnel:");
+	    	
+	    	while(result.next()){
+    			
+				   System.out.println();
+    		          Double pay = result.getDouble(1);
+    		   
+    
+    		          
+				 System.out.println(pay);
+				
 
-	    	ResultSet rs = statement.executeQuery(Query);
+			} 
+	        
 
-	    			while(rs.next())
-	    			{
+	       }
+	    
+	    //shows the payments made for each publication type
+	    public static void pubPayments()  throws SQLException{
+	    	
+	    	
+	    	
+	    	
+	    	System.out.println("Enter the date of beginning (i.e 2020-01-01):  ");
+	        String begindate = in.next();
+	        System.out.println("Enter the date of ending (i.e 2020-01-01):  ");
+	        String enddate = in.next();
 
-	    				System.out.print("type:"+rs.getString(1));
-	    				System.out.print("totalPayment:"+rs.getString(2));
+	        
+	        PreparedStatement pubpayment = null;
+	        pubpayment= connection.prepareStatement("SELECT 'Book' AS type, SUM(amount) AS total_payments INNER JOIN Employee ON Authors.Staff_Id = Employee.Staff_Id INNER JOIN Compensate ON Employee.Staff_Id = Compensate.Staff_Id INNER JOIN Payments ON Compensate.PaymentId = Payments.PaymentId WHERE claim_date >= ? AND claim_date <= ? UNION ALL SELECT 'Editorial' AS type, SUM(amount) AS total_payments FROM Editors INNER JOIN Employee ON Editors.Staff_Id = Employee.Staff_Id INNER JOIN Compensate ON Employee.Staff_Id = Compensate.Staff_Id INNER JOIN Payments ON Compensate.PaymentId = Payments.PaymentId WHERE claim_date >= ? AND claim_date <= ? UNION ALL SELECT 'Article' AS type, SUM(amount) AS total_payments FROM Journalists INNER JOIN Employee ON Journalists.Staff_Id = Employee.Staff_Id INNER JOIN Compensate ON Employee.Staff_Id = Compensate.Staff_Id INNER JOIN Payments ON Compensate.PaymentId = Payments.PaymentId WHERE claim_date >= ? AND claim_date <= ?;" );
+	        pubpayment.setDate(1, java.sql.Date.valueOf(begindate));
+	        pubpayment.setDate(2, java.sql.Date.valueOf(enddate));
+	        pubpayment.setDate(3, java.sql.Date.valueOf(begindate));
+	        pubpayment.setDate(4, java.sql.Date.valueOf(enddate));
+	        pubpayment.setDate(5, java.sql.Date.valueOf(begindate));
+	        pubpayment.setDate(6, java.sql.Date.valueOf(enddate));
+	    	
+	    	result = pubpayment.executeQuery();
+	    	System.out.println("type" +
+                    "\t" +"Total payments for publications:");
+	    	
+	    	while(result.next()){
+	    		  System.out.println();
+	    		  String type = result.getString(1);
+		          Double pay = result.getDouble(2);
+				  System.out.println( type + "\t" + pay);
+				    
 
 
-	    			} 
+			} 
+	    	
+	    	
+	    	
 
 	       }
 
