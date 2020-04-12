@@ -161,12 +161,14 @@ public class Distributor{
 
 
             PreparedStatement stmt;
-            stmt = connection.prepareStatement("SELECT NAME,FACILITY_ID FROM HOSPITAL");
-            String Query = "INSERT INTO Distributor VALUES (" +account_no+ ","
+            stmt = connection.prepareStatement("INSERT INTO Distributor VALUES (" +account_no+ ","
              +type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
-             +location+ "," +balance+ "," +city + ")";
-             Stat
-            stmt.executeUpdate(Query);
+             +location+ "," +balance+ "," +city + ")");
+
+            //String Query = "INSERT INTO Distributor VALUES (" +account_no+ ","
+             //+type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
+             //+location+ "," +balance+ "," +city + ")";
+            stmt.executeUpdate();
       }
       catch( InputMismatchException e) {
           e.printStackTrace();
