@@ -142,10 +142,10 @@ public class Distributor{
         System.out.println("Enter Account_no");
         int account_no = in.nextInt();
         System.out.println("Enter type: ('W' | 'B' | 'L')");
-        String type = '' + in.next().charAt(0);
+        String type = "" + in.next().charAt(0);
         while (type == null) {
           System.out.println("Enter type: ('W' | 'B' | 'L')");
-          type = '' + in.next().charAt(0);
+          type = "" + in.next().charAt(0);
         }
         System.out.println("Enter name of distributor: ");
         String name = in.nextLine();
