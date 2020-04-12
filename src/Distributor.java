@@ -139,37 +139,44 @@ public class Distributor{
     */
     public static void newDistributor() throws SQLException {
         // Distributor(Account_no, type, name, phone_no, contact_person, location, balance, city)
-        System.out.println("Enter Account_no");
-        int account_no = in.nextInt();
-        System.out.println("Enter type: ('W' | 'B' | 'L')");
-        String type = "" + in.next().charAt(0);
-        while (type == null) {
-          System.out.println("Enter type: ('W' | 'B' | 'L')");
-          type = "" + in.next().charAt(0);
-        }
-        System.out.println("Enter name of distributor: ");
-        String name = in.nextLine();
-        while (name == null) {
-          System.out.println("Enter name of distributor: ");
-          name = in.nextLine();
-        }
-        System.out.println("Enter phone_no: i.e. 555-555-5555");
-        String phone_no = in.nextLine();
-        System.out.println("Enter contact_person name: ");
-        String contact_person = in.nextLine();
-        System.out.println("Enter location: ");
-        String location = in.nextLine();
-        System.out.println("Enter balance: ");
-        double balance = in.nextDouble();
-        System.out.println("Enter city: ");
-        String city = in.nextLine();
+        try {
+
+
+            System.out.println("Enter Account_no");
+            int account_no = in.nextInt();
+            System.out.println("Enter type: ('W' | 'B' | 'L')");
+            String type = "" + in.nextLine().charAt(0);
+            /* For some reason the console is skipping over
+            while (type == null) {
+              System.out.println("Enter type: ('W' | 'B' | 'L')");
+              type = "" + in.nextLine().charAt(0);
+            }
+            */
+            System.out.println("Enter name of distributor: ");
+            String name = in.next();
+            System.out.println("Enter phone_no: i.e. 555-555-5555");
+            String phone_no = in.next();
+            System.out.println("Enter contact_person name: ");
+            String contact_person = in.next();
+            System.out.println("Enter location: ");
+            String location = in.next();
+            System.out.println("Enter balance: ");
+            double balance = in.nextDouble();
+            System.out.println("Enter city: ");
+            String city = in.next();
+
 
 
         String Query = "INSERT INTO Distributor VALUES (" +account_no+ ","
          +type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
          +location+ "," +balance+ "," +city + ")";
         statement.executeUpdate(Query);
-
+      }
+      catch( InputMismatchException e) {
+          e.printStackTrace();
+          System.out.println("Returning to main menu!");
+          return;
+      }
 
 
     }
