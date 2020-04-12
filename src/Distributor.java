@@ -22,7 +22,7 @@ public class Distributor{
         Scanner s = new Scanner(System.in);
         int choice;
         do {
-            System.out.println("---------------- Main Menu ------------------");
+            System.out.println("\n\n---------------- Main Menu ------------------");
             System.out.println("1: Add a distributor");
             System.out.println("2: Show all distributors");
             System.out.println("3: Delete distributor");
@@ -32,6 +32,7 @@ public class Distributor{
             switch(choice) {
                 case 1: try {                               // Add a distributor
                     newDistributor();
+                    break;
                 }catch (SQLException e){
                     e.printStackTrace();
                     if (connection != null) {
@@ -44,6 +45,7 @@ public class Distributor{
                 }
                 case 2: try {                               // Show all the distributors
                     showDistributor();
+                    break;
                 }catch (SQLException e){
                     e.printStackTrace();
                     if (connection != null) {
@@ -55,7 +57,7 @@ public class Distributor{
                     }
                 }
                 case 3: try {                               // Show all the distributors
-                    showDistributor();
+                    deleteDistributor();
                 }catch (SQLException e){
                     e.printStackTrace();
                     if (connection != null) {
@@ -139,9 +141,10 @@ public class Distributor{
           String location = result.getString(6);
           double balance = result.getDouble(7);
           String city = result.getString(8);
-            System.out.println(name +
-                               "\t" + account_no +
+            System.out.println(
+                               account_no +
                                "\t" + type +
+                               "\t" + name +
                                "\t" + phone_no +
                                "\t" + contact_person +
                                "\t" + location +
@@ -182,9 +185,6 @@ public class Distributor{
              +type+ "\",\"" +name+ "\",\"" +phone_no+ "\",\"" +contact_person+ "\",\""
              +location+ "\"," +balance+ ",\"" +city + "\")");
 
-            //String Query = "INSERT INTO Distributor VALUES (" +account_no+ ","
-             //+type+ "," +name+ "," +phone_no+ "," +contact_person+ ","
-             //+location+ "," +balance+ "," +city + ")";
             pstmt.executeUpdate();
       }
       catch( InputMismatchException e) {
@@ -192,6 +192,16 @@ public class Distributor{
           System.out.println("Returning to main menu!");
           return;
       }
+    }
+
+    public static void deleteDistributor() throws SQLException {
+        System.out.println("Enter Account_no of Distributor to delete:");
+        int account_no = in.nextInt();
+        in.nextLine();
+
+        PreparedStatement pstmt = null;
+        pstmt = connection.prepareStatement("DELETE FROM Distributor WHERE Account_no = " + account_no + ";");
+        pstmt.executeUpdate();
 
 
     }
