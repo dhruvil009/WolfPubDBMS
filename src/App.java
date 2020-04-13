@@ -226,6 +226,7 @@ public class App{
         System.out.println("Title: 1 Audience: 2");
         int ch = in.nextInt();
         if(ch == 1){
+            in.nextLine();
             System.out.println("Enter title");
             String title = in.nextLine();
             System.out.println("Enter Pub Id");
@@ -237,6 +238,7 @@ public class App{
             System.out.println(i+" records updated");
         }
         else if(ch == 2){
+            in.nextLine();
             System.out.println("Enter Audience");
             String audience = in.nextLine();
             System.out.println("Enter Pub Id");
@@ -266,8 +268,10 @@ public class App{
         int s_id = in.nextInt();
         PreparedStatement statement=connection.prepareStatement("SELECT * From Publications where Pub_Id in (Select Pub_Id from Has where Staff_Id=?);");
         statement.setInt(1, s_id);
-        int i=statement.executeUpdate();
-        System.out.println(i+" records updated");
+        result = statement.executeQuery();
+        while (result.next()) {
+            System.out.println(result.getInt("Pub_Id")+ " : "+ result.getString("Title") +" : "+ result.getBoolean("Type") +" : "+ result.getString("Audience"));
+        }
     }
 
     public static void NewChapter() throws SQLException{
@@ -291,6 +295,7 @@ public class App{
     }
 
     public static void DeleteChapter() throws SQLException{
+        in.nextLine();
         System.out.println("Enter ISBN");
         String isbn = in.nextLine();
         System.out.println("Enter Chapter Id");
