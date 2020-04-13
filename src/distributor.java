@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.util.*;
 
 public class distributor{
-    static final String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/mtrawic";
+    static final String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/dshah4";
     private static Scanner in = null;
     private static Connection connection = null;
     private static Statement statement = null;
@@ -30,7 +30,8 @@ public class distributor{
             System.out.println("5: Place an order for distributor");
             System.out.println("6: Update balance on receipt of payment");
             System.out.println("7: Bill distributor");
-            System.out.println("8: Back");
+            System.out.println("8: Receive payment");
+            System.out.println("9: Back");
 
             System.out.println("\n\n Enter your choice.");
 
@@ -128,12 +129,25 @@ public class distributor{
                         }
                     }
                 }
-                case 8:
+                case 8: try {                               // Update a distributor
+                    receivePayment();
+                    break;
+                }catch (SQLException e){
+                    e.printStackTrace();
+                    if (connection != null) {
+                        try {
+                            connection.rollback();
+                        } catch(SQLException excep) {
+                            excep.printStackTrace();
+                        }
+                    }
+                }
+                case 9:
                   break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + choice);
             }
-        }while(choice <= 7 && choice >= 1);
+        }while(choice <= 8 && choice >= 1);
     }
 
     private static void initialize() {
@@ -149,8 +163,8 @@ public class distributor{
     private static void connectToDatabase() throws ClassNotFoundException, SQLException {
         Class.forName("org.mariadb.jdbc.Driver");
 
-        String user = "mtrawic";
-        String password = "aplus";
+        String user = "dshah4";
+        String password = "legionsofdoom";
 
         connection = DriverManager.getConnection(jdbcURL, user, password);
         statement = connection.createStatement();
@@ -604,6 +618,66 @@ public class distributor{
       System.out.println("To change their balance use option 3 or 6 in main menu. ");
 
     }
+
+    /*
+    * Let an admin enter receipt of payment
+    */
+    public static void receivePayment() throws SQLException {
+      System.out.println("Which distributor is the payment from? (Enter Account_no)");
+      int account_no = in.nextInt();
+      in.nextLine();
+
+      System.out.println("What amount?");
+      double amount = in.nextDouble();
+      in.nextLine();
+
+      // Insert something into payments table (PaymentId, Amount, date, type, claim_date)
+      PreparedStatement enterPayStmnt = null;
+      enterPayStmnt = connection.prepareStatement("INSERT INTO Payments VALUES(?, ?, ?, ?, ?)");
+      // Come up with a PaymentId that isn't already in db.
+      Random rand = new Random();
+      int paymentId = 1 + rand.nextInt(2100000000);
+      java.util.Date utilDate = new java.util.Date();
+      java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+
+      enterPayStmnt.setInt(1, paymentId);
+      enterPayStmnt.setDouble(2, amount);
+      enterPayStmnt.setDate(3, sqlDate);
+      enterPayStmnt.setInt(4, 1);         // I'm guessing 1 signals incoming payments?
+      enterPayStmnt.setDate(5, sqlDate);
+
+      // Enter a row in the Pays table.
+      PreparedStatement enterIntoPayTableStmnt = null;
+      enterIntoPayTableStmnt = connection.prepareStatement("INSERT INTO Pays VALUES(?, ?)");
+      enterIntoPayTableStmnt.setInt(1, paymentId);
+      enterIntoPayTableStmnt.setInt(2, account_no);
+
+      // Update the distributor's balance
+      // First find out what the balance is and then decrease it by the recieved payment.
+      PreparedStatement getDistBalance = null;
+      getDistBalance = connection.prepareStatement("SELECT balance FROM Distributor WHERE Account_no = ?;");
+      getDistBalance.setInt(1, account_no);
+
+      PreparedStatement updateBalance = null;
+      updateBalance = connection.prepareStatement("UPDATE Distributor SET balance = ? WHERE Account_no = ?");
+
+
+      enterPayStmnt.executeUpdate();
+      enterIntoPayTableStmnt.executeUpdate();
+      result = getDistBalance.executeQuery();
+      result.next();
+      double currBalance = result.getDouble(1);
+      System.out.println("Current balance: " + currBalance);
+      currBalance -= amount;
+      System.out.println("Current balance after subtraction: " + currBalance);
+      updateBalance.setDouble(1, currBalance);
+      updateBalance.setInt(2, account_no);
+      updateBalance.executeUpdate();
+
+
+      return;
+    }
+
 
 
 }
