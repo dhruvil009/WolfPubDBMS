@@ -29,6 +29,7 @@ public class Distributor{
             System.out.println("4: Update a distributor");
             System.out.println("5: Place an order for distributor");
             System.out.println("6: Update balance on receipt of payment");
+            System.out.println("7: Bill distributor");
             System.out.println("\n\n Enter your choice.");
 
             choice = s.nextInt();
@@ -112,11 +113,23 @@ public class Distributor{
                     }
                 }
                     break;
-                case 7: break;
+                case 7: try {                               // Update a distributor
+                    billDistributor();
+                    break;
+                }catch (SQLException e){
+                    e.printStackTrace();
+                    if (connection != null) {
+                        try {
+                            connection.rollback();
+                        } catch(SQLException excep) {
+                            excep.printStackTrace();
+                        }
+                    }
+                }
                 default:
                     throw new IllegalStateException("Unexpected value: " + choice);
             }
-        }while(choice<=7 && choice>=1);
+        }while(choice <= 8 && choice >= 1);
     }
 
     private static void initialize() {
@@ -515,8 +528,11 @@ public class Distributor{
 
     }
 
+    /*
+    * Let an admin update the balance of a distributor.
+    */
     public static void updateBalance() throws SQLException {
-        // Ideally this part will be figured out based on the user.
+
         System.out.println("Which distributor are you updating? (Enter the Account_no)");
         int account_no = in.nextInt();
         in.nextLine();
@@ -546,6 +562,42 @@ public class Distributor{
         setBalanceStmt.setInt(2, account_no);
         setBalanceStmt.executeUpdate();
         System.out.println("Balance updated successfully.");
+
+    }
+
+    /*
+    * Let an admin calculate the bill for an order.
+    */
+    public static void billDistributor() throws SQLException {
+      System.out.println("Which order are you billing? (Enter the order_id)");
+      int order_id = in.nextInt();
+      in.nextLine();
+      PreparedStatement billStmt = null;
+      billStmt = connection.prepareStatement("SELECT Account_no, name, order_id, SUM(price) + MAX(shipping_cost) AS bill_amount " +
+      " FROM (  SELECT Distributor.Account_no AS Account_no, name, Orders.order_id, price, shipping_cost " +
+          " FROM Order_for_Edition  INNER JOIN Distributor ON Order_for_Edition.Account_no = Distributor.Account_no " +
+              "INNER JOIN Orders ON Orders.order_id = Order_for_Edition.order_id   WHERE Orders.order_id = ? " +
+          " UNION ALL  SELECT Distributor.Account_no AS Account_no, name, Orders.order_id, price, shipping_cost " +
+          "FROM Order_for_Issues INNER JOIN Distributor on Order_for_Issues.Account_no = Distributor.Account_no " +
+          "INNER JOIN Orders ON Orders.order_id = Order_for_Issues.order_id   WHERE Orders.order_id = ?  ) t");
+      billStmt.setInt(1, order_id);
+      billStmt.setInt(2, order_id);
+      result = billStmt.executeQuery();
+      double bill = 0;
+      boolean notEmpty = false;
+      int account_no = 0;
+      while (result.next()) {
+        account_no = result.getInt(1);
+        bill = result.getDouble(4);
+        notEmpty = true;
+      }
+      if (!notEmpty) {
+        System.out.println("There is no order with " + order_id + " id.");
+        return;
+      }
+
+      System.out.println("Account_no " + account_no + " owes " + bill + " for order" + order_id + ".");
+      System.out.println("To change their balance use option 3 or 6 in main menu. ");
 
     }
 
