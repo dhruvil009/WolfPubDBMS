@@ -27,6 +27,7 @@ public class Distributor{
             System.out.println("2: Show all distributors");
             System.out.println("3: Delete distributor");
             System.out.println("4: Update a distributor");
+            System.out.println("5: Place an order for distributor");
             System.out.println("\n\n Enter your choice.");
 
             choice = s.nextInt();
@@ -72,6 +73,19 @@ public class Distributor{
                 }
                 case 4: try {                               // Update a distributor
                     updateDistributor();
+                    break;
+                }catch (SQLException e){
+                    e.printStackTrace();
+                    if (connection != null) {
+                        try {
+                            connection.rollback();
+                        } catch(SQLException excep) {
+                            excep.printStackTrace();
+                        }
+                    }
+                }
+                case 5: try {                               // Update a distributor
+                    placeOrder();
                     break;
                 }catch (SQLException e){
                     e.printStackTrace();
@@ -169,7 +183,7 @@ public class Distributor{
     }
 
     /*
-    * A menu guides you through adding a new Distributor to the Distributors table.
+    * A menu guides an admin through adding a new Distributor to the Distributors table.
     * The column names are Account_no, type, name, phone_no, contact_person, location, balance, city
     */
     public static void newDistributor() throws SQLException {
@@ -226,7 +240,8 @@ public class Distributor{
     }
 
     /*
-    * Guides the user through updating the values in a row.
+    * Guides the admin through updating the values in a row. In order for a distributor
+    * to be able to update himself need some sort of protection against updating balance.
     */
     public static void updateDistributor() throws SQLException {
         System.out.println("Enter Account_no of Distributor to update:");
@@ -346,7 +361,98 @@ public class Distributor{
               }
             } while (choice != 8);
 
+    } // End updateDistributor()
+
+    /*
+    * placeOrder() Guides a distributor through making an order.
+    */
+    public static void placeOrder() throws SQLException {
+        // Ideally this part will be figured out based on the user.
+        System.out.println("Which distributor is this order for? (Enter the Account_no)");
+        int account_no = in.nextInt();
+        in.nextLine();
+
+        // Create an order
+        // Need order_id, order_date, delivery_status, shipping_cost
+        System.out.println("Enter order_id:");
+        int order_id = in.nextInt();
+        in.nextLine();
+
+        System.out.println("Enter date for order: (Use yyyy-mm-dd format)");
+        String order_date = in.nextLine();
+
+        System.out.println("Enter shipping cost: ");
+        double shipping_cost = in.nextDouble();
+        in.nextLine();
+
+        PreparedStatement newOrderStmt = null;
+        newOrderStmt = connection.prepareStatement("INSERT INTO  Orders VALUES(?, ?, ?, ?);");
+        newOrderStmt.setInt(1, order_id);
+        newOrderStmt.setDate(2, java.sql.Date.valueOf(order_date));
+        newOrderStmt.setInt(3, 0);
+        newOrderStmt.setDouble(4, shipping_cost);
+        newOrderStmt.executeUpdate();
+
+
+        PreparedStatement addEditionStmt = connection.prepareStatement(
+            "INSERT INTO Order_for_Edition VALUES(?, ?, ?, ?, ?);");
+        addEditionStmt.setInt(1, account_no);
+        String isbn = "";
+        addEditionStmt.setInt(3, order_id);
+        double price = 0;
+        int quantity = 0;
+
+        PreparedStatement removeEditionStmt = connection.prepareStatement(
+        "DELETE FROM Order_for_Edition WHERE Account_no = ? AND ISBN = ? AND order_id = ?"
+        );
+
+        // Let the Admin or Distributor add Editions or Issues to the order.
+        int choice;
+        do {
+            System.out.println("\n\n---------------- Order Menu ------------------");
+            System.out.println("1: Add edition to order");
+            System.out.println("2: Remove edition from order");
+            System.out.println("3: Add issue to order");
+            System.out.println("4: Remove issue from order");
+            //System.out.println("5: Show current order");
+            System.out.println("6: Submit order and exit");
+            //System.out.println("7: Cancel order and exit");
+
+            choice = in.nextInt();
+            in.nextLine();
+            switch(choice) {
+              case 1:
+                System.out.println("Enter ISBN");
+                isbn = in.nextLine();
+                System.out.println("Enter quantity: ");
+                quantity = in.nextInt();
+                in.nextLine();
+                System.out.println("Enter total price: ");
+                price = in.nextDouble();
+                in.nextLine();
+                addEditionStmt.setString(2, isbn);
+                addEditionStmt.setDouble(4, price);
+                addEditionStmt.setInt(5, quantity);
+                addEditionStmt.executeUpdate();
+                break;
+
+              case 2:
+                System.out.println("Enter ISBN");
+                isbn = in.nextLine();
+                removeEditionStmt.setInt(1, account_no);
+                removeEditionStmt.setString(2, isbn);
+                removeEditionStmt.setInt(3, order_id);
+                removeEditionStmt.executeUpdate();
+                break;
+
+            }
+
+
+        } while (choice != 8);
+
+
     }
+
 
 
 }
