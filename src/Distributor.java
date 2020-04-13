@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 
 import java.util.*;
 
-public class Distributor{
+public class distributor{
     static final String jdbcURL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/mtrawic";
     private static Scanner in = null;
     private static Connection connection = null;
@@ -30,6 +30,7 @@ public class Distributor{
             System.out.println("5: Place an order for distributor");
             System.out.println("6: Update balance on receipt of payment");
             System.out.println("7: Bill distributor");
+            System.out.println("8: Back");
             System.out.println("\n\n Enter your choice.");
 
             choice = s.nextInt();
@@ -126,10 +127,12 @@ public class Distributor{
                         }
                     }
                 }
+                case 8:
+                  break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + choice);
             }
-        }while(choice <= 8 && choice >= 1);
+        }while(choice <= 7 && choice >= 1);
     }
 
     private static void initialize() {
