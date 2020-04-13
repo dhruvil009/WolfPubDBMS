@@ -19,8 +19,15 @@ public class App{
         int choice;
         do {
             System.out.println("---------------------QUERIES----------------------");
-            System.out.println("1.");
-            System.out.println("7. Go Back");
+            System.out.println("1. Create New Publication");
+            System.out.println("2. Update Publication");
+            System.out.println("3. Assign Editor");
+            System.out.println("4. See Publications You are responsible for");
+            System.out.println("5. Create New Chapter");
+            System.out.println("6. Delete Chapter");
+            System.out.println("7. Create New Article");
+            System.out.println("8. Delete Article");
+            System.out.println("9. Go Back");
             System.out.println("\n\n Enter your choice.");
 
             choice = in.nextInt();
