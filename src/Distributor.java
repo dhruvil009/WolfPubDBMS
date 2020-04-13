@@ -28,6 +28,7 @@ public class Distributor{
             System.out.println("3: Delete distributor");
             System.out.println("4: Update a distributor");
             System.out.println("5: Place an order for distributor");
+            System.out.println("6: Update balance on receipt of payment");
             System.out.println("\n\n Enter your choice.");
 
             choice = s.nextInt();
@@ -86,6 +87,19 @@ public class Distributor{
                 }
                 case 5: try {                               // Update a distributor
                     placeOrder();
+                    break;
+                }catch (SQLException e){
+                    e.printStackTrace();
+                    if (connection != null) {
+                        try {
+                            connection.rollback();
+                        } catch(SQLException excep) {
+                            excep.printStackTrace();
+                        }
+                    }
+                }
+                case 6: try {                               // Update a distributor
+                    updateBalance();
                     break;
                 }catch (SQLException e){
                     e.printStackTrace();
@@ -501,6 +515,39 @@ public class Distributor{
 
     }
 
+    public static void updateBalance() throws SQLException {
+        // Ideally this part will be figured out based on the user.
+        System.out.println("Which distributor are you updating? (Enter the Account_no)");
+        int account_no = in.nextInt();
+        in.nextLine();
+
+        PreparedStatement currentBalStmt = null;
+        currentBalStmt = connection.prepareStatement("SELECT balance FROM Distributor WHERE Account_no = ?;");
+        currentBalStmt.setInt(1, account_no);
+        result = currentBalStmt.executeQuery();
+        double bal = 0;
+        boolean notEmpty = false;
+        while (result.next()) {
+          bal = result.getDouble(1);
+          notEmpty = true;
+        }
+        if (!notEmpty) {
+          System.out.println("Couldn't find that distributor!");
+          return;
+        }
+        System.out.println("Current balance is: " + bal);
+        System.out.println("What would you like the new balance to be?");
+        double newBalance = in.nextDouble();
+        in.nextLine();
+        PreparedStatement setBalanceStmt = null;
+        // ("UPDATE Distributor SET type = ?, name = ?, phone_no = ?, contact_person = ?, location = ?, balance = ?, city = ? WHERE Account_no = ?");
+        setBalanceStmt = connection.prepareStatement("UPDATE Distributor SET balance = ? WHERE Account_no = ?;");
+        setBalanceStmt.setDouble(1, newBalance);
+        setBalanceStmt.setInt(2, account_no);
+        setBalanceStmt.executeUpdate();
+        System.out.println("Balance updated successfully.");
+
+    }
 
 
 }
