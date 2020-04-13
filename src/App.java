@@ -182,48 +182,44 @@ public class App{
     public static void NewPublication() throws SQLException {
         System.out.println("Enter Pub Id");
         int pubid = in.nextInt();
+        in.nextLine();
         System.out.println("Enter title");
         String title = in.nextLine();
-        title = in.nextLine();
-        System.out.println(title);
-        System.out.println("Enter type");
+        System.out.println("Is it a periodical?");
         Boolean type = in.nextBoolean();
+        in.nextLine();
         System.out.println("Enter audience");
         String audience = in.nextLine();
-        audience = in.nextLine();
-
         PreparedStatement statement=connection.prepareStatement("INSERT into Publications VALUES(?, ?, ?, ?);");
         statement.setInt(1,pubid);//1 specifies the first parameter in the query
         statement.setString(2, title);
         statement.setBoolean(3,type);//1 specifies the first parameter in the query
         statement.setString(4, audience);
         int i=statement.executeUpdate();
-        System.out.println(i+" records updated");
+        System.out.println(i+" records inserted in Publications");
 
-        if(!type){
-            System.out.println("Enter Publication Date : ");
-            String date = in.next();
-            statement=connection.prepareStatement("INSERT into Books VALUES(?, ?);");
-            statement.setInt(1,pubid);
-            statement.setDate(2, java.sql.Date.valueOf(date));
-            i=statement.executeUpdate();
-            System.out.println(i+" records updated");
+        if(type){
+          System.out.println("Enter periodicity: ");
+          String p = in.next();
+          System.out.println("Enter type/genre: ");
+          String t = in.next();
+          statement=connection.prepareStatement("INSERT into Periodicals VALUES(?, ?, ?);");
+          statement.setInt(1,pubid);
+          statement.setString(2, p);
+          statement.setString(3, t);
+          i=statement.executeUpdate();
+          System.out.println(i+" records inserted in  Periodicals");
         }
         else{
-            System.out.println("Enter Periodicity : ");
-            String p = in.next();
-            System.out.println("Enter Type : ");
-            String t = in.next();
-            statement=connection.prepareStatement("INSERT into Periodicals VALUES(?, ?, ?);");
-            statement.setInt(1,pubid);
-            statement.setString(2, p);
-            statement.setString(3, t);
-            i=statement.executeUpdate();
-            System.out.println(i+" records updated");
+          System.out.println("Enter Publication Date : ");
+          String date = in.next();
+          statement=connection.prepareStatement("INSERT into Books VALUES(?, ?);");
+          statement.setInt(1,pubid);
+          statement.setDate(2, java.sql.Date.valueOf(date));
+          i=statement.executeUpdate();
+          System.out.println(i+" records inserted in Books");
         }
 
-
-        System.out.println("Done");
     }
 
     public static void UpdatePublication() throws SQLException {
