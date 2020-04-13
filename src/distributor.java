@@ -22,7 +22,7 @@ public class distributor{
         Scanner s = new Scanner(System.in);
         int choice;
         do {
-            System.out.println("\n\n---------------- Main Menu ------------------");
+            System.out.println("\n\n---------------- Distributor Menu ------------------");
             System.out.println("1: Add a distributor");
             System.out.println("2: Show all distributors");
             System.out.println("3: Delete distributor");
@@ -430,121 +430,166 @@ public class distributor{
         double shipping_cost = in.nextDouble();
         in.nextLine();
 
-        PreparedStatement newOrderStmt = null;
-        newOrderStmt = connection.prepareStatement("INSERT INTO  Orders VALUES(?, ?, ?, ?);");
-        newOrderStmt.setInt(1, order_id);
-        newOrderStmt.setDate(2, java.sql.Date.valueOf(order_date));
-        newOrderStmt.setInt(3, 0);
-        newOrderStmt.setDouble(4, shipping_cost);
-        newOrderStmt.executeUpdate();
+        // Declare the statements for editing an order
+       PreparedStatement newOrderStmt = null;
+       PreparedStatement addEditionStmt = null;
+       PreparedStatement removeEditionStmt = null;
+       PreparedStatement addIssueStmt = null;
+       PreparedStatement removeIssueStmt = null;
+
+        // Set up a transaction for creating an order. Don't let
+        // halfway completed an orders be submitted to the db.
+        // Also allow the user to cancel the order.
+        try {
+            connection.setAutoCommit(false);
+
+            newOrderStmt = connection.prepareStatement("INSERT INTO  Orders VALUES(?, ?, ?, ?);");
+            newOrderStmt.setInt(1, order_id);
+            newOrderStmt.setDate(2, java.sql.Date.valueOf(order_date));
+            newOrderStmt.setInt(3, 0);
+            newOrderStmt.setDouble(4, shipping_cost);
+            newOrderStmt.executeUpdate();
 
 
-        PreparedStatement addEditionStmt = connection.prepareStatement(
-            "INSERT INTO Order_for_Edition VALUES(?, ?, ?, ?, ?);");
-        addEditionStmt.setInt(1, account_no);
-        String isbn = "";
-        addEditionStmt.setInt(3, order_id);
-        double price = 0;
-        int quantity = 0;
+            addEditionStmt = connection.prepareStatement(
+                "INSERT INTO Order_for_Edition VALUES(?, ?, ?, ?, ?);");
+            addEditionStmt.setInt(1, account_no);
+            String isbn = "";
+            addEditionStmt.setInt(3, order_id);
+            double price = 0;
+            int quantity = 0;
 
-        PreparedStatement removeEditionStmt = connection.prepareStatement(
-        "DELETE FROM Order_for_Edition WHERE Account_no = ? AND ISBN = ? AND order_id = ?"
-        );
+            removeEditionStmt = connection.prepareStatement(
+            "DELETE FROM Order_for_Edition WHERE Account_no = ? AND ISBN = ? AND order_id = ?"
+            );
 
-        PreparedStatement addIssueStmt = connection.prepareStatement(
-            "INSERT INTO Order_for_Issues VALUES(?, ?, ?, ?, ?, ?);");
-        addIssueStmt.setInt(1, account_no);
-        int Pub_Id = 0;
-        String issue_date = "";
-        addIssueStmt.setInt(4, order_id);
-        price = 0;
-        quantity = 0;
+            addIssueStmt = connection.prepareStatement(
+                "INSERT INTO Order_for_Issues VALUES(?, ?, ?, ?, ?, ?);");
+            addIssueStmt.setInt(1, account_no);
+            int Pub_Id = 0;
+            String issue_date = "";
+            addIssueStmt.setInt(4, order_id);
+            price = 0;
+            quantity = 0;
 
-        PreparedStatement removeIssueStmt = connection.prepareStatement(
-        "DELETE FROM Order_for_Issues WHERE Account_no = ? AND Pub_Id = ? AND issue_date = ? AND order_id = ?"
-        );
+            removeIssueStmt = connection.prepareStatement(
+            "DELETE FROM Order_for_Issues WHERE Account_no = ? AND Pub_Id = ? AND issue_date = ? AND order_id = ?"
+            );
 
-        // Let the Admin or Distributor add/remove Editions or Issues to the order.
-        int choice;
-        do {
-            System.out.println("\n\n---------------- Order Menu ------------------");
-            System.out.println("1: Add edition to order");
-            System.out.println("2: Remove edition from order");
-            System.out.println("3: Add issue to order");
-            System.out.println("4: Remove issue from order");
-            //System.out.println("5: Show current order");
-            System.out.println("5: Submit order and exit");
-            //System.out.println("7: Cancel order and exit");
+            // Let the Admin or Distributor add/remove Editions or Issues to the order as long as they please.
+            int choice;
+            do {
+                System.out.println("\n\n---------------- Order Menu ------------------");
+                System.out.println("1: Add edition to order");
+                System.out.println("2: Remove edition from order");
+                System.out.println("3: Add issue to order");
+                System.out.println("4: Remove issue from order");
+                System.out.println("5: Submit order and exit");
+                System.out.println("6: Cancel order and exit");
 
-            choice = in.nextInt();
-            in.nextLine();
-            switch(choice) {
-              case 1:                                   // Add edition
-                System.out.println("Enter ISBN");
-                isbn = in.nextLine();
-                System.out.println("Enter quantity: ");
-                quantity = in.nextInt();
+                choice = in.nextInt();
                 in.nextLine();
-                System.out.println("Enter total price: ");
-                price = in.nextDouble();
-                in.nextLine();
-                addEditionStmt.setString(2, isbn);
-                addEditionStmt.setDouble(4, price);
-                addEditionStmt.setInt(5, quantity);
-                addEditionStmt.executeUpdate();
-                break;
+                switch(choice) {
+                  case 1:                                   // Add edition
+                    System.out.println("Enter ISBN");
+                    isbn = in.nextLine();
+                    System.out.println("Enter quantity: ");
+                    quantity = in.nextInt();
+                    in.nextLine();
+                    System.out.println("Enter total price: ");
+                    price = in.nextDouble();
+                    in.nextLine();
+                    addEditionStmt.setString(2, isbn);
+                    addEditionStmt.setDouble(4, price);
+                    addEditionStmt.setInt(5, quantity);
+                    addEditionStmt.executeUpdate();
+                    break;
 
-              case 2:                                 // Remove edition
-                System.out.println("Enter ISBN");
-                isbn = in.nextLine();
-                removeEditionStmt.setInt(1, account_no);
-                removeEditionStmt.setString(2, isbn);
-                removeEditionStmt.setInt(3, order_id);
-                removeEditionStmt.executeUpdate();
-                break;
+                  case 2:                                 // Remove edition
+                    System.out.println("Enter ISBN");
+                    isbn = in.nextLine();
+                    removeEditionStmt.setInt(1, account_no);
+                    removeEditionStmt.setString(2, isbn);
+                    removeEditionStmt.setInt(3, order_id);
+                    removeEditionStmt.executeUpdate();
+                    break;
 
-              case 3:                                   // Add issue
-                System.out.println("Enter Pub_Id");
-                Pub_Id = in.nextInt();
-                in.nextLine();
-                System.out.println("Enter issue_date: (Use format yyyy-mm-dd)");
-                issue_date = in.nextLine();
-                System.out.println("Enter quantity: ");
-                quantity = in.nextInt();
-                in.nextLine();
-                System.out.println("Enter total price: ");
-                price = in.nextDouble();
-                in.nextLine();
-                addIssueStmt.setInt(2, Pub_Id);
-                addIssueStmt.setDate(3, java.sql.Date.valueOf(issue_date));
-                addIssueStmt.setInt(4, order_id);
-                addIssueStmt.setDouble(5, price);
-                addIssueStmt.setInt(6, quantity);
-                addIssueStmt.executeUpdate();
-                break;
-// "DELETE FROM Order_for_Issues WHERE Account_no = ? AND Pub_Id = ? AND issue_date = ? AND order_id = ?"
-              case 4:                                 // Remove issue
-                System.out.println("Enter Pub_Id");
-                Pub_Id = in.nextInt();
-                in.nextLine();
-                System.out.println("Enter issue_date: (Use format yyyy-mm-dd)");
-                issue_date = in.nextLine();
-                removeIssueStmt.setInt(1, account_no);
-                removeIssueStmt.setInt(2, Pub_Id);
-                removeIssueStmt.setDate(3, java.sql.Date.valueOf(issue_date));
-                removeIssueStmt.setInt(4, order_id);
-                removeIssueStmt.executeUpdate();
-                break;
-              case 5:
-                System.out.println("Order submitted!");
-                break;
+                  case 3:                                   // Add issue
+                    System.out.println("Enter Pub_Id");
+                    Pub_Id = in.nextInt();
+                    in.nextLine();
+                    System.out.println("Enter issue_date: (Use format yyyy-mm-dd)");
+                    issue_date = in.nextLine();
+                    System.out.println("Enter quantity: ");
+                    quantity = in.nextInt();
+                    in.nextLine();
+                    System.out.println("Enter total price: ");
+                    price = in.nextDouble();
+                    in.nextLine();
+                    addIssueStmt.setInt(2, Pub_Id);
+                    addIssueStmt.setDate(3, java.sql.Date.valueOf(issue_date));
+                    addIssueStmt.setInt(4, order_id);
+                    addIssueStmt.setDouble(5, price);
+                    addIssueStmt.setInt(6, quantity);
+                    addIssueStmt.executeUpdate();
+                    break;
+
+                  case 4:                                 // Remove issue
+                    System.out.println("Enter Pub_Id");
+                    Pub_Id = in.nextInt();
+                    in.nextLine();
+                    System.out.println("Enter issue_date: (Use format yyyy-mm-dd)");
+                    issue_date = in.nextLine();
+                    removeIssueStmt.setInt(1, account_no);
+                    removeIssueStmt.setInt(2, Pub_Id);
+                    removeIssueStmt.setDate(3, java.sql.Date.valueOf(issue_date));
+                    removeIssueStmt.setInt(4, order_id);
+                    removeIssueStmt.executeUpdate();
+                    break;
+                  case 5:                    // Order is complete so commit it to DB
+                    connection.commit();
+                    System.out.println("Order submitted!");
+                    break;
+                  case 6:                 // User wants to cancel order so rollback
+                                          // to state of DB before order began.
+                    connection.rollback();
+                    System.out.println("Order cancelled!");
+                    break;
+                }
+
+
+            } while (choice < 5);
+        } catch (SQLException e ) {
+            e.printStackTrace();
+            if (connection != null) {   // If something goes wrong perform a rollback.
+                try {
+                    System.err.print("Order is cancelled. Transaction is being rolled back");
+                    connection.rollback();
+                } catch(SQLException excep) {
+                    excep.printStackTrace();
+                }
             }
-
-
-        } while (choice != 5);
-
+          } finally {                     // Close all PreparedStatement once finished.
+            if (newOrderStmt != null) {
+                newOrderStmt.close();
+            }
+            if (addEditionStmt != null) {
+                addEditionStmt.close();
+            }
+            if (removeEditionStmt != null) {
+                removeEditionStmt.close();
+            }
+            if (addIssueStmt != null) {
+                addIssueStmt.close();
+            }
+            if (addIssueStmt != null) {
+                addIssueStmt.close();
+            }
+            connection.setAutoCommit(true);
+          }
 
     }
+
 
     /*
     * Let an admin update the balance of a distributor.
@@ -642,7 +687,7 @@ public class distributor{
       java.util.Date utilDate = new java.util.Date();
       java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 
-      // Do the following as one transaction.
+      // Receive Payment, and update the balance of distibutor as one transaction.
       try {
           connection.setAutoCommit(false);
           // Insert something into payments table (PaymentId, Amount, date, type, claim_date)
@@ -677,7 +722,7 @@ public class distributor{
           updateBalance.setInt(2, account_no);
           updateBalance.executeUpdate();
           connection.commit();
-      } catch (SQLException e ) {
+      } catch (SQLException e ) {   // If something goes wrong then rollback.
         e.printStackTrace();
         if (connection != null) {
             try {
@@ -687,7 +732,7 @@ public class distributor{
                 excep.printStackTrace();
             }
         }
-      } finally {
+      } finally {           // Close the PreparedStatement and turn auto commit back on.
         if (enterPayStmnt != null) {
             enterPayStmnt.close();
         }
