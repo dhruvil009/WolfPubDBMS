@@ -631,51 +631,78 @@ public class distributor{
       double amount = in.nextDouble();
       in.nextLine();
 
-      // Insert something into payments table (PaymentId, Amount, date, type, claim_date)
       PreparedStatement enterPayStmnt = null;
-      enterPayStmnt = connection.prepareStatement("INSERT INTO Payments VALUES(?, ?, ?, ?, ?)");
+      PreparedStatement enterIntoPayTableStmnt = null;
+      PreparedStatement getDistBalance = null;
+      PreparedStatement updateBalance = null;
+
       // Come up with a PaymentId that isn't already in db.
       Random rand = new Random();
       int paymentId = 1 + rand.nextInt(2100000000);
       java.util.Date utilDate = new java.util.Date();
       java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 
-      enterPayStmnt.setInt(1, paymentId);
-      enterPayStmnt.setDouble(2, amount);
-      enterPayStmnt.setDate(3, sqlDate);
-      enterPayStmnt.setInt(4, 1);         // I'm guessing 1 signals incoming payments?
-      enterPayStmnt.setDate(5, sqlDate);
+      // Do the following as one transaction.
+      try {
+          connection.setAutoCommit(false);
+          // Insert something into payments table (PaymentId, Amount, date, type, claim_date)
+          enterPayStmnt = connection.prepareStatement("INSERT INTO Payments VALUES(?, ?, ?, ?, ?)");
+          enterPayStmnt.setInt(1, paymentId);
+          enterPayStmnt.setDouble(2, amount);
+          enterPayStmnt.setDate(3, sqlDate);
+          enterPayStmnt.setInt(4, 1);         // I'm guessing 1 signals incoming payments?
+          enterPayStmnt.setDate(5, sqlDate);
 
-      // Enter a row in the Pays table.
-      PreparedStatement enterIntoPayTableStmnt = null;
-      enterIntoPayTableStmnt = connection.prepareStatement("INSERT INTO Pays VALUES(?, ?)");
-      enterIntoPayTableStmnt.setInt(1, paymentId);
-      enterIntoPayTableStmnt.setInt(2, account_no);
+          // Enter a row in the Pays table.
+          enterIntoPayTableStmnt = connection.prepareStatement("INSERT INTO Pays VALUES(?, ?)");
+          enterIntoPayTableStmnt.setInt(1, paymentId);
+          enterIntoPayTableStmnt.setInt(2, account_no);
 
-      // Update the distributor's balance
-      // First find out what the balance is and then decrease it by the recieved payment.
-      PreparedStatement getDistBalance = null;
-      getDistBalance = connection.prepareStatement("SELECT balance FROM Distributor WHERE Account_no = ?;");
-      getDistBalance.setInt(1, account_no);
+          // Update the distributor's balance
+          // First find out what the balance is and then decrease it by the recieved payment.
+          getDistBalance = connection.prepareStatement("SELECT balance FROM Distributor WHERE Account_no = ?;");
+          getDistBalance.setInt(1, account_no);
 
-      PreparedStatement updateBalance = null;
-      updateBalance = connection.prepareStatement("UPDATE Distributor SET balance = ? WHERE Account_no = ?");
+          updateBalance = connection.prepareStatement("UPDATE Distributor SET balance = ? WHERE Account_no = ?");
 
+          enterPayStmnt.executeUpdate();
+          enterIntoPayTableStmnt.executeUpdate();
+          result = getDistBalance.executeQuery();
+          result.next();
+          double currBalance = result.getDouble(1);
+          System.out.println("Current balance: " + currBalance);
+          currBalance -= amount;
+          System.out.println("Current balance after subtraction: " + currBalance);
+          updateBalance.setDouble(1, currBalance);
+          updateBalance.setInt(2, account_no);
+          updateBalance.executeUpdate();
+          connection.commit();
+      } catch (SQLException e ) {
+        e.printStackTrace();
+        if (connection != null) {
+            try {
+                System.err.print("Transaction is being rolled back");
+                connection.rollback();
+            } catch(SQLException excep) {
+                excep.printStackTrace();
+            }
+        }
+      } finally {
+        if (enterPayStmnt != null) {
+            enterPayStmnt.close();
+        }
+        if (enterIntoPayTableStmnt != null) {
+            enterIntoPayTableStmnt.close();
+        }
+        if (getDistBalance != null) {
+            enterPayStmnt.close();
+        }
+        if (enterIntoPayTableStmnt != null) {
+            updateBalance.close();
+        }
+        connection.setAutoCommit(true);
+      }
 
-      enterPayStmnt.executeUpdate();
-      enterIntoPayTableStmnt.executeUpdate();
-      result = getDistBalance.executeQuery();
-      result.next();
-      double currBalance = result.getDouble(1);
-      System.out.println("Current balance: " + currBalance);
-      currBalance -= amount;
-      System.out.println("Current balance after subtraction: " + currBalance);
-      updateBalance.setDouble(1, currBalance);
-      updateBalance.setInt(2, account_no);
-      updateBalance.executeUpdate();
-
-
-      return;
     }
 
 
