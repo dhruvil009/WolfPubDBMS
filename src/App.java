@@ -80,54 +80,55 @@ public class App{
                     }
                 }
                     break;
-                case 5: try {
-                    NewChapter();
-                }catch (SQLException e){
-                    if (connection != null) {
-                        try {
-                            connection.rollback();
-                        } catch(SQLException excep) {
-                            excep.printStackTrace();
+                    case 5: try {
+                        addChapter();
+                    }catch (SQLException e){
+                        if (connection != null) {
+                            try {
+                                connection.rollback();
+                            } catch(SQLException excep) {
+                                excep.printStackTrace();
+                            }
                         }
                     }
-                }
-                    break;
-                case 6: try {
-                    DeleteChapter();
-                }catch (SQLException e){
-                    if (connection != null) {
-                        try {
-                            connection.rollback();
-                        } catch(SQLException excep) {
-                            excep.printStackTrace();
+                        break;
+                    case 6: try {
+                        removeChapter();
+                    }catch (SQLException e){
+                        if (connection != null) {
+                            try {
+                                connection.rollback();
+                            } catch(SQLException excep) {
+                                excep.printStackTrace();
+                            }
                         }
                     }
-                }
-                    break;
-                case 7: try {
-                    NewArticle();
-                }catch (SQLException e){
-                    if (connection != null) {
-                        try {
-                            connection.rollback();
-                        } catch(SQLException excep) {
-                            excep.printStackTrace();
+                        break;
+                    case 7: try {
+                        addArticle();
+                    }catch (SQLException e){
+                        if (connection != null) {
+                            try {
+                                connection.rollback();
+                            } catch(SQLException excep) {
+                                excep.printStackTrace();
+                            }
                         }
                     }
-                }
-                    break;
-                case 8: try {
-                    DeleteArticle();
-                }catch (SQLException e){
-                    if (connection != null) {
-                        try {
-                            connection.rollback();
-                        } catch(SQLException excep) {
-                            excep.printStackTrace();
+                        break;
+                    case 8: try {
+                        removeArticle();
+                    }catch (SQLException e){
+                        if (connection != null) {
+                            try {
+                                connection.rollback();
+                            } catch(SQLException excep) {
+                                excep.printStackTrace();
+                            }
                         }
                     }
-                }
-                    break;
+                        break;
+
                 case 9: break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + choice);
@@ -223,47 +224,47 @@ public class App{
     }
 
     public static void UpdatePublication() throws SQLException {
-    System.out.println("Enter Pub Id");
-    int pubid = in.nextInt();
-    in.nextLine();
-    System.out.println("Is it a periodical?");
-    boolean flag = in.nextBoolean();
-    in.nextLine();
-    System.out.println("Enter the new title");
-    String title = in.nextLine();
-    System.out.println("Enter the new audience");
-    String audience = in.nextLine();
-    PreparedStatement statement;
-    statement = connection.prepareStatement("UPDATE Publications SET Title = ?, Audience = ? WHERE Pub_Id = ?");
-    statement.setString(1, title);
-    statement.setString(2, audience);
-    statement.setInt(3, pubid);
-    int i=statement.executeUpdate();
-    System.out.println(i+" records updated in  Publications");
+        System.out.println("Enter Pub Id");
+        int pubid = in.nextInt();
+        in.nextLine();
+        System.out.println("Is it a periodical?");
+        boolean flag = in.nextBoolean();
+        in.nextLine();
+        System.out.println("Enter the new title");
+        String title = in.nextLine();
+        System.out.println("Enter the new audience");
+        String audience = in.nextLine();
+        PreparedStatement statement;
+        statement = connection.prepareStatement("UPDATE Publications SET Title = ?, Audience = ? WHERE Pub_Id = ?");
+        statement.setString(1, title);
+        statement.setString(2, audience);
+        statement.setInt(3, pubid);
+        int i=statement.executeUpdate();
+        System.out.println(i+" records updated in  Publications");
 
 
-    if(flag){
-      System.out.println("Enter new periodicity: ");
-      String p = in.next();
-      System.out.println("Enter new type/genre: ");
-      String t = in.next();
-      statement=connection.prepareStatement("UPDATE Periodicals SET periodicity = ?, type = ? WHERE Pub_Id = ?");
-      statement.setString(1, p);
-      statement.setString(2, t);
-      statement.setInt(3, pubid);
-      i=statement.executeUpdate();
-      System.out.println(i+" records updated in  Periodicals");
+        if(flag){
+          System.out.println("Enter new periodicity: ");
+          String p = in.next();
+          System.out.println("Enter new type/genre: ");
+          String t = in.next();
+          statement=connection.prepareStatement("UPDATE Periodicals SET periodicity = ?, type = ? WHERE Pub_Id = ?");
+          statement.setString(1, p);
+          statement.setString(2, t);
+          statement.setInt(3, pubid);
+          i=statement.executeUpdate();
+          System.out.println(i+" records updated in  Periodicals");
+        }
+        else{
+          System.out.println("Enter new Publication Date : ");
+          String date = in.next();
+          statement=connection.prepareStatement("UPDATE Books SET Publication_Date = ? WHERE Pub_Id = ?");
+          statement.setDate(1,java.sql.Date.valueOf(date));
+          statement.setInt(2, pubid);
+          i=statement.executeUpdate();
+          System.out.println(i+" records updated in Books");
+        }
     }
-    else{
-      System.out.println("Enter new Publication Date : ");
-      String date = in.next();
-      statement=connection.prepareStatement("UPDATE Books SET Publication_Date = ? WHERE Pub_Id = ?");
-      statement.setDate(1,java.sql.Date.valueOf(date));
-      statement.setInt(2, pubid);
-      i=statement.executeUpdate();
-      System.out.println(i+" records updated in Books");
-    }
-}
 
     public static void AssignEditor() throws SQLException {
         System.out.println("Enter Pub Id");
@@ -274,89 +275,99 @@ public class App{
         statement.setInt(1,pub_id);//1 specifies the first parameter in the query
         statement.setInt(2, ed_id);
         int i=statement.executeUpdate();
-        System.out.println(i+" records updated");
+        System.out.println(i+" records inserted");
     }
 
     public static void ResponsiblePublicationsInfo() throws SQLException{
         System.out.println("Enter Staff Id");
         int s_id = in.nextInt();
-        PreparedStatement statement=connection.prepareStatement("SELECT * From Publications where Pub_Id in (Select Pub_Id from Has where Staff_Id=?);");
+        PreparedStatement statement=connection.prepareStatement("SELECT * From Publications where Pub_Id in (select Pub_Id from Has where Staff_Id=?);");
         statement.setInt(1, s_id);
         result = statement.executeQuery();
+        System.out.println("Pub_ID: Title : Type : Audience");
         while (result.next()) {
-            System.out.println(result.getInt("Pub_Id")+ " : "+ result.getString("Title") +" : "+ result.getBoolean("Type") +" : "+ result.getString("Audience"));
+            System.out.println(result.getInt("Pub_Id")+"  "+ result.getString("Title") +"  "+ result.getBoolean("Type") +"  "+ result.getString("Audience"));
         }
     }
 
-    public static void NewChapter() throws SQLException{
-        System.out.println("Enter ISBN");
-        String isbn = in.nextLine();
-        isbn = in.nextLine();
-        System.out.println("Enter Chapter Id");
-        int c_id = in.nextInt();
-        System.out.println("Enter Text");
-        String text = in.nextLine();
-        text = in.nextLine();
-        System.out.println("Enter Title");
-        String title = in.nextLine();
-        PreparedStatement statement=connection.prepareStatement("INSERT INTO Chapter VALUES(?, ?, ?, ?);\n");
-        statement.setString(1,isbn);//1 specifies the first parameter in the query
-        statement.setInt(2, c_id);
-        statement.setString(3, text);//1 specifies the first parameter in the query
-        statement.setString(4, title);
-        int i=statement.executeUpdate();
-        System.out.println(i+" records updated");
-    }
-
-    public static void DeleteChapter() throws SQLException{
+    private static void addArticle() throws SQLException{
+        System.out.println("Enter the pub_id of the periodical");
+        int pub_id = in.nextInt();
+        System.out.println("Enter the date of issue");
+        String date = in.next();
+        System.out.println("Enter the article id");
+        int article_id = in.nextInt();
         in.nextLine();
-        System.out.println("Enter ISBN");
-        String isbn = in.nextLine();
-        System.out.println("Enter Chapter Id");
-        int c_id = in.nextInt();
-        PreparedStatement statement=connection.prepareStatement("DELETE FROM Chapter WHERE ISBN = ? AND chapter_Id = ?;");
-        statement.setString(1,isbn);//1 specifies the first parameter in the query
-        statement.setInt(2, c_id);
+        System.out.println("Enter the article title");
+        String article_title = in.nextLine();
+        System.out.println("Enter the article text");
+        String article_text = in.nextLine();
+        System.out.println("Enter the article date of creation");
+        String article_date = in.next();
+        PreparedStatement statement=connection.prepareStatement("INSERT INTO Article VALUES(?, ?, ?, ?, ?, ?)");
+        statement.setInt(1,pub_id);//1 specifies the firesultt parameter in the query
+        statement.setInt(3,article_id);
+        statement.setString(4,article_title);
+        statement.setString(5,article_text);
+        statement.setDate(2, java.sql.Date.valueOf(date));
+        statement.setDate(6,java.sql.Date.valueOf(article_date));
         int i=statement.executeUpdate();
-        System.out.println(i+" records updated");
+        System.out.println(i+" records inserted");
     }
 
-    public static void NewArticle() throws SQLException{
-        System.out.println("Enter Pub Id");
+    private static void addChapter() throws SQLException{
+        System.out.println("Enter the ISBN of the book edition");
+        String ISBN = in.next();
+        System.out.println("Enter the chapter id");
+        int chapter_id = in.nextInt();
+        in.nextLine();
+        System.out.println("Enter the chapter text");
+        String chapter_text = in.nextLine();
+        System.out.println("Enter the chapter title");
+        String chapter_title = in.nextLine();
+        PreparedStatement statement=connection.prepareStatement("INSERT INTO Chapter VALUES(?, ?, ?, ?)");
+        statement.setString(1,ISBN);//1 specifies the firesultt parameter in the query
+        statement.setInt(2,chapter_id);
+        statement.setString(3, chapter_text);
+        statement.setString(4,chapter_title);
+        int i=statement.executeUpdate();
+        System.out.println(i+" records inserted");
+    }
+
+    private static void removeArticle() throws SQLException{
+
+        System.out.println("Enter the pub_id of the book");
         int pub_id = in.nextInt();
         System.out.println("Enter the date of issue");
         String date = in.next();
-        System.out.println("Enter Article Id");
-        int a_id = in.nextInt();
-        System.out.println("Enter Text");
-        String text = in.nextLine();
-        System.out.println("Enter Title");
-        String title = in.nextLine();
-        System.out.println("Enter date of creation");
-        String dateofcreation = in.nextLine();
-        PreparedStatement statement=connection.prepareStatement("INSERT INTO Article VALUES(?, ?, ?, ?, ?, ?);");
-        statement.setInt(1,pub_id);//1 specifies the first parameter in the query
-        statement.setDate(2, java.sql.Date.valueOf(date));
-        statement.setInt(3, a_id);
-        statement.setString(5, text);//1 specifies the first parameter in the query
-        statement.setString(4, title);
-        statement.setDate(6, java.sql.Date.valueOf(dateofcreation));
+        System.out.println("Enter the article id");
+        int article_id = in.nextInt();
+        PreparedStatement statement=connection.prepareStatement("DELETE FROM Article WHERE Pub_Id = ? AND issue_date = ? AND Id = ?");
+        statement.setInt(1,pub_id);//1 specifies the firesultt parameter in the query
+        statement.setDate(2,java.sql.Date.valueOf(date));
+        statement.setInt(3,article_id);
         int i=statement.executeUpdate();
-        System.out.println(i+" records updated");
+        System.out.println(i+" records removed");
+
     }
 
-    public static void DeleteArticle() throws SQLException{
-        System.out.println("Enter Pub Id");
-        int pub_id = in.nextInt();
-        System.out.println("Enter the date of issue");
-        String date = in.next();
-        System.out.println("Enter Article Id");
-        int a_id = in.nextInt();
-        PreparedStatement statement=connection.prepareStatement("DELETE FROM Article WHERE Pub_Id = Pub_Id = ? AND issue_date = ? AND Id = ?;");
-        statement.setInt(1,pub_id);//1 specifies the first parameter in the query
-        statement.setDate(2, java.sql.Date.valueOf(date));
-        statement.setInt(3, a_id);
+    private static void removeChapter() throws SQLException{
+
+        System.out.println("Enter the ISBN of the book edition");
+        String ISBN = in.next();
+        System.out.println("Enter the chapter id");
+        int chapter_id = in.nextInt();
+        PreparedStatement statement=connection.prepareStatement("DELETE FROM Chapter WHERE ISBN = ? AND chapter_Id = ?");
+        statement.setString(1,ISBN);//1 specifies the firesultt parameter in the query
+        statement.setInt(2,chapter_id);
         int i=statement.executeUpdate();
-        System.out.println(i+" records updated");
+        System.out.println(i+" records inserted");
+
+
     }
+
+
+
+
+
 }
