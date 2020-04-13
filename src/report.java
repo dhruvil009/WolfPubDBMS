@@ -32,6 +32,7 @@ public class report {
 	            System.out.println("7.Get revenue by location");
 	            System.out.println("8.Calculate total payments to authors and editors during time period");
 	            System.out.println("9.Calculate total payments to the editors and authors, per time period and per work type");
+							System.out.println("10. Back");
 
 	            System.out.println("\n\n Enter your choice:    ");
 
@@ -159,6 +160,8 @@ public class report {
 	                    }
 	                }
 	                break;
+									case 10:
+										break;
 
 	                default:
 	                    throw new IllegalStateException("Unexpected value: " + choice);
