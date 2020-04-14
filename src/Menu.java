@@ -3,6 +3,7 @@
 // Mention these object calls in switch statements
 
 
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -43,7 +44,8 @@ class Menu{
               System.out.println("2. Production of a new edition or of an issue of a publication:");
               System.out.println("3. Distribution");
               System.out.println("4. Reports");
-              System.out.println("5. Back");
+              System.out.println("5. Show tables");
+              System.out.println("6. Back");
               choice2 = sc.nextInt();
               switch(choice2){
                 case 1:
@@ -59,9 +61,12 @@ class Menu{
                     report.main(null);
                     break;
                 case 5:
+                    show.main(null);
+                    break;
+                case 6:
                     break;
                 }
-              }while(choice2<=4 && choice2 >=1);
+              }while(choice2<=5 && choice2 >=1);
               break;
           case 2:
           do{
