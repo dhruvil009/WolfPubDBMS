@@ -23,14 +23,14 @@ public class distributor{
         int choice;
         do {
             System.out.println("\n\n---------------- Distributor Menu ------------------");
-            System.out.println("1: Add a distributor");
+            System.out.println("1: Sign up as a distributor");
             System.out.println("2: Show all distributors");
-            System.out.println("3: Delete distributor");
-            System.out.println("4: Update a distributor");
-            System.out.println("5: Place an order for distributor");
+            System.out.println("3: Delete my distributor account");
+            System.out.println("4: Update my distributor account");
+            System.out.println("5: Place an order");
             System.out.println("6: Update balance on receipt of payment");
-            System.out.println("7: Bill distributor");
-            System.out.println("8: Receive payment");
+            System.out.println("7: Billing");
+            System.out.println("8: Send payment");
             System.out.println("9: Back");
 
             System.out.println("\n\n Enter your choice.");
