@@ -30,8 +30,8 @@ public class show {
 							System.out.println("5: Show all publications");
 							System.out.println("6: Show all topics");
 							System.out.println("7: Show all PubAbout");
-							System.out.println("8: Show all Invites");
-							System.out.println("9: Show all Has");
+							System.out.println("8: Show all employees associated with publications");
+							System.out.println("9: Show all editors associated with pulications");
 							System.out.println("10: Show all Books");
 							System.out.println("11: Show all Edition");
 							System.out.println("12: Show all Chapter");
@@ -39,17 +39,17 @@ public class show {
 							System.out.println("14: Show all Periodicals");
 							System.out.println("15: Show all Issues");
 							System.out.println("16: Show all Articles");
-							System.out.println("17: Show all WritesArticle");
-							System.out.println("18: Show all ArticleAbout");
-							System.out.println("19: Show all Payments");
-							System.out.println("20: Show all Distributors");
-							System.out.println("21: Show all Pay");
-							System.out.println("22: Show all Compensate");
-							System.out.println("23: Show all Orders");
-							System.out.println("24: Show all Orders for issues");
+							System.out.println("17: Show all journalists associated with articles");
+							System.out.println("18: Show all articles with topics");
+							System.out.println("19: Show all payment details");
+							System.out.println("20: Show all distributors");
+							System.out.println("21: Show all payments from distributors");
+							System.out.println("22: Show all payments to employees");
+							System.out.println("23: Show all orders");
+							System.out.println("24: Show all orders for issues");
 							System.out.println("25: Show all orders for edition");
-							System.out.println("26: Show all Of");
-							System.out.println("27: Show all ChapterAbout");
+							System.out.println("26: Show all editions of books");
+							System.out.println("27: Show all chapter with topics");
 							System.out.println("28: Exit");
 
 
